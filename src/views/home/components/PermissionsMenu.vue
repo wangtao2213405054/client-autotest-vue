@@ -24,7 +24,7 @@
         <el-form-item label="菜单类型">
           <div style="width: 200px">
             <el-radio v-model="addForm.menuType" label="menu">菜单</el-radio>
-            <el-radio v-model="addForm.menuType" label="api">接口</el-radio>
+            <el-radio v-model="addForm.menuType" label="case">接口</el-radio>
           </div>
         </el-form-item>
         <el-form-item label="所属位置">

@@ -101,9 +101,9 @@
 </template>
 
 <script>
-import dataType from '@/views/api/common/dataType'
-import previewTree from '@/views/api/common/previewJson'
-import exportJson from '@/views/api/common/exportJson'
+import dataType from '@/views/case/common/dataType'
+import previewTree from '@/views/case/common/previewJson'
+import exportJson from '@/views/case/common/exportJson'
 export default {
   components: {
     previewTree,

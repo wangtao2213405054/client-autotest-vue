@@ -184,9 +184,9 @@
 </template>
 
 <script>
-import editor from '@/views/api/components/exportTable'
-import Instructions from '@/views/api/common/Instructions'
-import editorTree from '@/views/api/components/jsonTree'
+import editor from '@/views/case/components/exportTable'
+import Instructions from '@/views/case/common/Instructions'
+import editorTree from '@/views/case/components/jsonTree'
 import { getModulesList } from '@/api/business/folder'
 import { getManagementList, getUserListByIdList } from '@/api/account/management'
 export default {

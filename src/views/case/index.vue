@@ -23,7 +23,7 @@
         <el-button type="primary" @click="editModulesData">确 定</el-button>
       </span>
     </el-dialog>
-    <el-col :span="6" :xs="24">
+    <el-col :span="7" :xs="26">
       <el-scrollbar class="api-content">
         <el-row style="padding: 10px" :gutter="20">
           <el-col :span="17" :xs="24">
@@ -58,9 +58,8 @@
                 v-if="data['identifier'] === 'folder'"
                 :icon-class="node.expanded ? 'coke-icon-folder-open' : 'coke-icon-folder'"
                 class="icon-class"
-                style="color: #409EFF"
               />
-              <svg-icon v-else icon-class="coke-icon-api-document" style="font-size: 20px" class="icon-class" />
+              <svg-icon v-else icon-class="coke-icon-case" style="font-size: 20px" class="icon-class" />
               <span style="color: #606266">{{ data.name }}</span>
             </span>
             <span v-show="data['show']">
@@ -97,7 +96,7 @@
         <div class="folderTree" style="height: 20px" />
       </el-scrollbar>
     </el-col>
-    <el-col style="border-style: solid; border-color: #DCDFE6; border-width: 1px; background-color: #FFFFFF" :span="18" :xs="24">
+    <el-col style="border-style: solid; border-color: #DCDFE6; border-width: 1px; background-color: #FFFFFF" :span="17" :xs="24">
       <el-scrollbar class="api-content">
         <div v-if="queryId">
           <edit style="padding: 10px" :module-id="queryId" />
@@ -113,7 +112,7 @@
 
 <script>
 import { deleteModulesInfo, editModulesInfo, getModulesList } from '@/api/business/folder'
-import edit from '@/views/api/components/edit'
+import edit from '@/views/case/components/edit'
 
 export default {
   components: {

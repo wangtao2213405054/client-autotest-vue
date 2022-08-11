@@ -1,30 +1,30 @@
 
 import Layout from '@/layout'
 
-const api = {
-  path: '/api',
+const _case = {
+  path: '/case',
   component: Layout,
   redirect: 'noRedirect',
-  name: 'Api',
+  name: 'CaseManage',
   meta: {
-    title: '接口管理',
-    icon: 'coke-icon-api-management',
-    roles: ['api']
+    title: '用例管理',
+    icon: 'el-icon-menu',
+    roles: ['CaseManage']
   },
   children: [
     {
       path: 'container',
-      component: () => import('@/views/api/index'),
-      name: 'ApiContainer',
+      component: () => import('@/views/case/index'),
+      name: 'TestCase',
       meta: {
-        title: '接口列表',
+        title: '测试用例',
         icon: 'coke-icon-api-list',
-        roles: ['apiContainer']
+        roles: ['TestCase']
       }
     },
     {
       path: 'state',
-      component: () => import('@/views/api/state/index'),
+      component: () => import('@/views/case/state/index'),
       name: 'ApiState',
       meta: {
         title: '接口状态',
@@ -34,7 +34,7 @@ const api = {
     },
     {
       path: 'response',
-      component: () => import('@/views/api/response/index'),
+      component: () => import('@/views/case/response/index'),
       name: 'ApiResponse',
       meta: {
         title: '公共响应',
@@ -46,13 +46,13 @@ const api = {
       path: 'document/:id',
       hidden: true,
       name: 'ApiDocument',
-      component: () => import('@/views/api/document'),
+      component: () => import('@/views/case/document'),
       meta: {
         title: '接口文档',
-        activeMenu: '/api/container'
+        activeMenu: '/case/container'
       }
     }
   ]
 }
 
-export default api
+export default _case

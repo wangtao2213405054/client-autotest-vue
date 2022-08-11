@@ -23,18 +23,18 @@
         <el-button type="primary" @click="editClassificationData">确 定</el-button>
       </span>
     </el-dialog>
-    <el-col :span="6" :xs="24">
+    <el-col :span="7" :xs="24">
       <el-row :gutter="20" style="margin-bottom: 10px">
         <el-col :span="16" :xs="24">
           <el-input
             v-model="filterText"
             placeholder="输入关键字进行过滤"
-            size="small"
+            size="mini"
             clearable
           />
         </el-col>
         <el-col :span="6" :xs="24">
-          <el-button v-waves size="small" type="success" plain icon="el-icon-plus" @click="newClassification(null)">新增</el-button>
+          <el-button v-waves size="mini" type="success" plain icon="el-icon-plus" @click="newClassification(null)">新增</el-button>
         </el-col>
       </el-row>
       <el-tree
@@ -79,7 +79,7 @@
         </span>
       </el-tree>
     </el-col>
-    <el-col :span="18" :xs="24">
+    <el-col :span="17" :xs="24">
       <account :key="queryId" :query-id="queryId" :classification-tree="classificationTree" />
     </el-col>
   </el-row>

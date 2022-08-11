@@ -9,7 +9,7 @@
         <img src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif" alt="">
       </div>
       <div class="box-center">
-        <div class="user-name text-center">接口自动化平台</div>
+        <div class="user-name text-center">UI自动化平台</div>
         <div class="user-role text-center text-muted">以人为驱动的测试行为转化为机器执行的一种过程</div>
       </div>
     </div>
@@ -28,7 +28,7 @@
         <div class="user-bio-section-header"><svg-icon icon-class="education" /><span><b>说明</b></span></div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            支持API文档、API调试、API Mock、API自动化测试
+            支持Web、APP自动化测试
           </div>
         </div>
       </div>

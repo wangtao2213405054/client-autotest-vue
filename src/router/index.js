@@ -8,7 +8,7 @@ import Layout from '@/layout'
 
 /* Router Modules */
 import chartsRouter from './modules/charts'
-import api from './modules/api'
+import _case from './modules/case'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -108,7 +108,7 @@ export const asyncRoutes = [
 
   /** when your routing map is too long, you can split it into small modules **/
   chartsRouter,
-  api,
+  _case,
   {
     path: '/test',
     component: Layout,
@@ -117,7 +117,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/test/index'),
         name: 'Tests',
-        meta: { title: '测试', icon: 'coke-icon-api-management', noCache: true }
+        meta: { title: '测试', icon: 'coke-icon-case-management', noCache: true }
       }
     ]
   },

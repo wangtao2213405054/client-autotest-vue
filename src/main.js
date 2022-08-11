@@ -24,7 +24,7 @@ import CodeEditor from 'bin-code-editor'
 
 /**
  * If you don't want to use mock-server
- * you want to use MockJs for mock api
+ * you want to use MockJs for mock case
  * you can execute: mockXHR()
  *
  * Currently MockJs will be used in the production environment,

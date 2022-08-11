@@ -24,7 +24,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: process.env.NODE_ENV === 'development' ? '/' : '/interfaceTest',
+  publicPath: process.env.NODE_ENV === 'development' ? '/' : '/clientTest',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
@@ -38,7 +38,7 @@ module.exports = {
     },
     // before: require('./mock/mock-server.js'),
     proxy: {
-      '/api/interface': {
+      '/api/v1/client': {
         target: 'http://127.0.0.1:5000/', // 跨域后的 url
         changeOrigin: true // 允许跨域
       }

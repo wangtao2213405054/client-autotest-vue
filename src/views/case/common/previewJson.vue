@@ -7,7 +7,7 @@
 
 <script>
 import jsonView from 'vue-json-views'
-import dataType from '@/views/api/common/dataType'
+import dataType from '@/views/case/common/dataType'
 export default {
   components: {
     jsonView
