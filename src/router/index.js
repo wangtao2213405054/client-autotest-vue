@@ -9,6 +9,9 @@ import Layout from '@/layout'
 /* Router Modules */
 import chartsRouter from './modules/charts'
 import _case from './modules/case'
+import conf from '@/router/modules/conf'
+import mock from '@/router/modules/mock'
+import devices from '@/router/modules/devices'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -108,6 +111,9 @@ export const asyncRoutes = [
 
   /** when your routing map is too long, you can split it into small modules **/
   chartsRouter,
+  devices,
+  conf,
+  mock,
   _case,
   {
     path: '/test',
