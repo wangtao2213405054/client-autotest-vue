@@ -25,19 +25,16 @@
     </el-dialog>
     <el-col :span="7" :xs="26">
       <el-scrollbar class="api-content">
-        <el-row style="padding: 10px" :gutter="20">
-          <el-col :span="17" :xs="24">
-            <el-input
-              v-model="filterText"
-              placeholder="输入关键字进行过滤"
-              size="small"
-              clearable
-            />
-          </el-col>
-          <el-col :span="4" :xs="24">
-            <el-button size="small" type="primary" plain icon="el-icon-plus" @click="createModule(null)">添加</el-button>
-          </el-col>
-        </el-row>
+        <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px">
+          <el-input
+            v-model="filterText"
+            placeholder="输入关键字进行过滤"
+            size="small"
+            clearable
+            style="width: 70%; margin-right: 20px"
+          />
+          <el-button size="small" type="primary" plain icon="el-icon-plus" @click="createModule(null)">添加</el-button>
+        </div>
         <el-tree
           ref="tree"
           class="folderTree"
