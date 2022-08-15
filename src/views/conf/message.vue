@@ -7,22 +7,24 @@
           <span style="color: #909399; margin-left: 10px">Email</span>
         </span>
         <el-switch
-          v-model="addForm.emailForm.switch"
+          v-model="emailForm.state"
           style="float: right; padding: 3px 0"
           active-color="#13ce66"
           inactive-color="#ff4949"
           @click.native.stop
+          @change="updateEmailSwitch"
         />
       </div>
-      <el-form ref="emailFormRef" inline :model="addForm.emailForm" :rules="emailFormRules" label-width="80px">
-        <el-form-item label="邮箱服务" style="width: 50%">
+      <el-form ref="emailFormRef" inline :model="emailForm" :rules="emailFormRules" label-width="80px">
+        <el-form-item label="邮箱服务" style="width: 50%" prop="host">
           <el-select
-            v-model="addForm.emailForm.host"
+            v-model="emailForm.host"
             filterable
             allow-create
             default-first-option
             placeholder="请选择SMTP服务器"
             style="width: 350px"
+            clearable
           >
             <el-option
               v-for="item in emailHostList"
@@ -35,18 +37,18 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="邮件标题">
-          <el-input v-model="addForm.emailForm.title" style="width: 350px" placeholder="请输入邮件标题" clearable />
+        <el-form-item label="邮件标题" prop="title">
+          <el-input v-model="emailForm.title" style="width: 350px" placeholder="请输入邮件标题" clearable />
         </el-form-item>
-        <el-form-item label="发送人" style="width: 50%">
-          <el-input v-model="addForm.emailForm.sender" style="width: 350px" placeholder="请输入发送人" clearable />
+        <el-form-item label="发送人" style="width: 50%" prop="sender">
+          <el-input v-model="emailForm.sender" style="width: 350px" placeholder="请输入发送人" clearable />
         </el-form-item>
-        <el-form-item label="授权码">
-          <el-input v-model="addForm.emailForm.password" style="width: 350px" placeholder="请输入邮箱授权码" show-password clearable />
+        <el-form-item label="授权码" prop="password">
+          <el-input v-model="emailForm.password" style="width: 350px" placeholder="请输入邮箱授权码" show-password clearable />
         </el-form-item>
-        <el-form-item label="接收人">
+        <el-form-item label="接收人" prop="receivers">
           <el-select
-            v-model="addForm.emailForm.receivers"
+            v-model="emailForm.receivers"
             multiple
             filterable
             allow-create
@@ -70,8 +72,8 @@
         </el-form-item>
       </el-form>
       <div style="text-align: center">
-        <el-button type="primary">保 存</el-button>
-        <el-button>重 置</el-button>
+        <el-button type="primary" @click="saveMessage">保 存</el-button>
+        <el-button @click="resetForm">重 置</el-button>
       </div>
     </el-card>
     <el-card>
@@ -109,6 +111,7 @@
 
 <script>
 import { getManagementList } from '@/api/account/management'
+import { getEmailInfo, editEmailInfo, updateEmailSwitch } from '@/api/conf/message'
 
 export default {
   name: 'Message',
@@ -130,20 +133,44 @@ export default {
         { key: 'smtp.mail.yahoo.com.cn', label: '雅虎中国' },
         { key: 'smtp.sohu.com', label: '搜狐' }
       ],
-      addForm: {
-        emailForm: {
-          host: null,
-          sender: null,
-          password: null,
-          title: null,
-          receivers: [],
-          switch: false
-        }
+      emailForm: {
+        id: null,
+        host: null,
+        sender: null,
+        password: null,
+        title: null,
+        receivers: [],
+        state: false,
+        projectId: localStorage.getItem('projectId')
       },
-      emailFormRules: {}
+      emailFormRules: {
+        host: [
+          { required: true, message: '请选择或输入SMTP邮箱服务器', trigger: 'change' }
+        ],
+        title: [
+          { required: true, message: '请输入邮件标题', trigger: 'change' },
+          { min: 2, max: 8, message: '长度在 2 到 8 个字符', trigger: 'blur' }
+        ],
+        sender: [
+          { required: true, message: '请输入邮件发送人名称', trigger: 'change' }
+        ],
+        password: [
+          { required: true, message: '请输入邮箱服务器授权码', trigger: 'change' }
+        ],
+        receivers: [
+          { required: true, message: '请输入或选择邮件接收人', trigger: 'change' }
+        ]
+      },
+      dingTalkForm: {
+        id: null,
+        token: null
+      }
     }
   },
   created() {
+  },
+  mounted() {
+    this.getEmailInfo()
   },
   methods: {
     async remoteMethod(query) {
@@ -163,6 +190,24 @@ export default {
       } else {
         this.emailList = []
       }
+    },
+    // 获取邮件信息
+    async getEmailInfo() {
+      this.emailForm = await getEmailInfo({ projectId: localStorage.getItem('projectId') })
+    },
+    saveMessage() {
+      this.$refs.emailFormRef.validate(async(valid) => {
+        if (valid) {
+          await editEmailInfo(this.emailForm)
+          await this.getEmailInfo()
+        }
+      })
+    },
+    async updateEmailSwitch(bool) {
+      await updateEmailSwitch({ state: bool, id: this.emailForm.id })
+    },
+    resetForm() {
+      this.$refs.emailFormRef.resetFields()
     }
   }
 }

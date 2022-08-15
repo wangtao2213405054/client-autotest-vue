@@ -31,9 +31,9 @@
             placeholder="输入关键字进行过滤"
             size="small"
             clearable
-            style="width: 70%; margin-right: 20px"
+            style="width: 65%; margin-right: 20px"
           />
-          <el-button size="small" type="primary" plain icon="el-icon-plus" @click="createModule(null)">添加</el-button>
+          <el-button style="" size="small" type="primary" plain icon="el-icon-plus" @click="createModule(null)">添加</el-button>
         </div>
         <el-tree
           ref="tree"
