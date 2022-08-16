@@ -19,6 +19,18 @@
             clearable
           />
         </el-form-item>
+        <el-form-item label="项目类型">
+          <div>
+            <el-radio v-model="addForm.mold" style="height: 50px" label="appium" border>
+              移动端
+              <div style="margin-top: 5px">基于 Appium 框架</div>
+            </el-radio>
+            <el-radio v-model="addForm.mold" style="height: 50px" label="selenium" border>
+              Web端
+              <div style="margin-top: 5px">基于 Selenium 框架</div>
+            </el-radio>
+          </div>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="visibleBool = false">取 消</el-button>
@@ -30,6 +42,8 @@
         <div class="user-block">
           <img class="img-circle" alt="" :src="item['avatar'] + avatarPrefix">
           <span class="username text-muted">{{ item['name'] }}</span>
+          <el-tag v-if="item.mold === 'appium'" class="mold" type="success">移动端</el-tag>
+          <el-tag v-else class="mold" type="warning">Web端</el-tag>
           <span class="description">{{ item['label'] }}</span>
         </div>
         <p>
@@ -85,7 +99,8 @@ export default {
         id: null,
         name: null,
         describe: null,
-        avatar: null
+        avatar: null,
+        mold: 'appium'
       },
       addFormRules: {
         name: [{ required: true, message: '请输入正确的项目名称', trigger: 'blur' }, { min: 2, max: 15, message: '长度在 2 到 15 个字符', trigger: 'blur' }],
@@ -123,7 +138,8 @@ export default {
         id: null,
         name: null,
         describe: null,
-        avatar: null
+        avatar: null,
+        mold: 'appium'
       }
       this.$refs.addFormRef.clearValidate()
       this.title = '创建项目'
@@ -175,9 +191,15 @@ export default {
       padding: 2px 0;
     }
 
-    .username{
+    .username {
       font-size: 16px;
       color: #000;
+    }
+    .mold {
+      display: block;
+      float: right;
+      margin-right: 10px;
+      align-items: center;
     }
 
     :after {
