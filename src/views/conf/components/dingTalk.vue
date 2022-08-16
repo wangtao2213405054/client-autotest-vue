@@ -8,12 +8,12 @@
           <el-popover
             placement="right"
             title="钉钉群机器人"
-            width="500"
+            width="550"
             trigger="hover"
           >
             <div style="font-size: 14px; padding: 1px; line-height: 30px; color: #606266; font-weight: 550">
               <div>1. 每次任务执行完成后会以钉钉机器人的形式发送消息通知</div>
-              <div>2. 支持配置多个群, 可点击 添加令牌 后新增群机器人Token来绑定多个群</div>
+              <div>2. 支持配置多个群, 可点击 添加机器人 后新增群机器人 Webhook 来绑定多个群</div>
               <div>3. <span style="color: #409EFF">右侧开关</span>可以控制本项目是否启用钉钉机器人通知</div>
               <div>4. 请保管好 Webhook 地址，不要公布在外部网站上，泄露有安全风险</div>
               <div>5. 如群机器人未配置加签秘钥请确保关键字中包含 <span style="color: #F56C6C">测试</span> 二字</div>
@@ -95,7 +95,7 @@
       </el-form-item>
     </el-form>
     <div style="text-align: center">
-      <el-button plain type="success" @click="addToken">新增令牌</el-button>
+      <el-button plain type="success" @click="addToken">新增机器人</el-button>
       <el-button type="primary" @click="saveMessage">保 存</el-button>
       <el-button @click="resetForm">重 置</el-button>
     </div>
