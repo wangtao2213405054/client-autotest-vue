@@ -32,17 +32,17 @@
         <el-button plain type="danger" @click="removeToken(index)">删 除</el-button>
       </el-form-item>
       <el-form-item label="消息通知">
-        <el-radio-group v-model="robotForm.atAll" :disabled="disabled">
+        <el-radio-group v-model="robotForm['atAll']" :disabled="disabled">
           <el-radio label="no" border>不@任何人</el-radio>
           <el-radio label="yes" border>@所有人</el-radio>
           <el-radio label="part" border>@指定人</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        v-if="robotForm.atAll === 'part'"
+        v-if="robotForm['atAll'] === 'part'"
       >
         <el-select
-          v-model="robotForm.atMobile"
+          v-model="robotForm['atMobile']"
           multiple
           filterable
           allow-create
