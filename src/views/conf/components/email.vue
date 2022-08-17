@@ -175,7 +175,12 @@ export default {
       })
     },
     async updateEmailSwitch(bool) {
-      await updateEmailSwitch({ state: bool, id: this.emailForm.id })
+      if (this.emailForm.id) {
+        await updateEmailSwitch({ state: bool, id: this.emailForm.id })
+      } else {
+        this.$message.warning('请先配置邮箱再使用开关')
+        this.emailForm.state = false
+      }
     },
     resetForm() {
       this.$refs.emailFormRef.resetFields()

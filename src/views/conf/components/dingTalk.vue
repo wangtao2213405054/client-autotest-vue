@@ -29,125 +29,42 @@
         active-color="#13ce66"
         inactive-color="#ff4949"
         @click.native.stop
+        @change="editRobotSwitch"
       />
     </div>
-    <el-form
-      ref="talkFormRef"
-      :model="talkForm"
-      :rules="talkFormRules"
-      label-width="100px"
-      hide-required-asterisk
-    >
-      <el-form-item
-        v-for="(group, index) in talkForm.tokens"
-        :key="group.key"
-        :label="'群机器人' + (index + 1)"
-        :prop="'group.' + index + '.token'"
-      >
-        <el-input
-          v-model="group.token"
-          placeholder="请输入群机器人的 Webhook 地址"
-          clearable
-          show-password
-          style="width: 35%; margin-right: 10px"
-        />
-        <el-input
-          v-model="group.sign"
-          placeholder="请输入群机器人的加签秘钥"
-          clearable
-          show-password
-          style="width: 35%; margin-right: 10px"
-        />
-        <el-button plain type="danger" @click="removeToken(index)">删 除</el-button>
-      </el-form-item>
-      <el-form-item label="消息通知">
-        <el-radio-group v-model="talkForm.atAll">
-          <el-radio label="no" border>不@任何人</el-radio>
-          <el-radio label="yes" border>@所有人</el-radio>
-          <el-radio label="part" border>@指定人</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item
-        v-if="talkForm.atAll === 'part'"
-      >
-        <el-select
-          v-model="talkForm.atMobile"
-          multiple
-          filterable
-          allow-create
-          default-first-option
-          remote
-          placeholder="请选择或输入被通知人的手机号"
-          :remote-method="remoteMethod"
-          :loading="loading"
-          style="width: 400px"
-        >
-          <el-option
-            v-for="item in userList"
-            :key="item.mobile"
-            :label="item.mobile"
-            :value="item.mobile"
-          >
-            <span style="float: left">{{ item.mobile }}</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
-          </el-option>
-        </el-select>
-      </el-form-item>
-    </el-form>
-    <div style="text-align: center">
-      <el-button plain type="success" @click="addToken">新增机器人</el-button>
-      <el-button type="primary" @click="saveMessage">保 存</el-button>
-      <el-button @click="resetForm">重 置</el-button>
-    </div>
+    <common :key="talkForm.id" :add-form="talkForm" mold="talk" @refresh="getRobotInfo" />
   </el-card>
 </template>
 
 <script>
-import { getManagementList } from '@/api/account/management'
+import common from '@/views/conf/components/common'
+import { editRobotSwitch, getRobotInfo } from '@/api/conf/robot'
 
 export default {
+  components: {
+    common
+  },
   data() {
     return {
-      loading: false,
-      userList: [],
-      talkForm: {
-        status: false,
-        tokens: [{ token: null, sign: null }],
-        atAll: 'no',
-        atMobile: []
-      },
-      talkFormRules: {}
+      talkForm: {}
     }
   },
+  async created() {
+    await this.getRobotInfo()
+  },
   methods: {
-    addToken() {
-      this.talkForm.tokens.push({
-        token: null,
-        sign: null,
-        key: Date.now()
+    async getRobotInfo() {
+      this.talkForm = await getRobotInfo({
+        projectId: localStorage.getItem('projectId'),
+        app: 'talk'
       })
     },
-    removeToken(index) {
-      if (this.talkForm.tokens.length > 1) {
-        this.talkForm.tokens.splice(index, 1)
-      } else this.$message.error('最少添加一个群机器人')
-    },
-    async remoteMethod(query) {
-      if (query !== '') {
-        this.loading = true
-        const requestForm = {
-          page: 1,
-          pageSize: 20,
-          name: query
-        }
-        try {
-          const { items } = await getManagementList(requestForm)
-          this.userList = items
-        } finally {
-          this.loading = false
-        }
+    async editRobotSwitch(bool) {
+      if (this.talkForm.id) {
+        await editRobotSwitch({ status: bool, id: this.talkForm.id })
       } else {
-        this.userList = []
+        this.$message.warning('请先配置钉钉机器人再使用开关')
+        this.talkForm.status = false
       }
     }
   }
