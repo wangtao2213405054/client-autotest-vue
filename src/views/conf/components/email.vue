@@ -138,9 +138,9 @@ export default {
     }
   },
   created() {
+    this.getEmailInfo()
   },
   mounted() {
-    this.getEmailInfo()
   },
   methods: {
     async remoteMethod(query) {

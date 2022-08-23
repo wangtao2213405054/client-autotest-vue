@@ -57,7 +57,6 @@ const actions = {
         if (!roles || roles.length <= 0) {
           reject('getInfo: roles 必须是一个非空数组!')
         }
-
         commit('SET_ROLES', roles)
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatarUrl)

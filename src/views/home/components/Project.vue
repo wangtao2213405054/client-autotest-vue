@@ -21,13 +21,13 @@
         </el-form-item>
         <el-form-item label="项目类型">
           <div>
-            <el-radio v-model="addForm.mold" style="height: 50px" label="appium" border>
+            <el-radio v-model="addForm.mold" style="height: 55px" label="appium" border>
               移动端
-              <div style="margin-top: 5px">基于 Appium 框架</div>
+              <div style="margin-top: 10px">基于 Appium 框架</div>
             </el-radio>
-            <el-radio v-model="addForm.mold" style="height: 50px" label="selenium" border>
+            <el-radio v-model="addForm.mold" style="height: 55px" label="selenium" border>
               Web端
-              <div style="margin-top: 5px">基于 Selenium 框架</div>
+              <div style="margin-top: 10px">基于 Selenium 框架</div>
             </el-radio>
           </div>
         </el-form-item>
@@ -38,7 +38,7 @@
       </span>
     </el-dialog>
     <div v-for="item in projectList" :key="item.id">
-      <div class="post" @click="enterProjectPage(item.id)">
+      <div class="post" @click="enterProjectPage(item.id, item.mold)">
         <div class="user-block">
           <img class="img-circle" alt="" :src="item['avatar'] + avatarPrefix">
           <span class="username text-muted">{{ item['name'] }}</span>
@@ -120,9 +120,10 @@ export default {
   },
   methods: {
     // 进入项目详情页面
-    enterProjectPage(id) {
+    enterProjectPage(id, mold) {
       console.log('点击测试呀' + id)
       localStorage.setItem('projectId', id)
+      localStorage.setItem('mold', mold)
       this.$router.push('/dashboard')
     },
     // 获取项目列表
@@ -160,6 +161,7 @@ export default {
       this.addForm.name = value['name']
       this.addForm.describe = value['describe']
       this.addForm.avatar = value['avatar']
+      this.addForm.mold = value['mold']
       this.title = '编辑项目'
       this.visibleBool = true
     },

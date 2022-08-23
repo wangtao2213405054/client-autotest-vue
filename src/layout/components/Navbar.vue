@@ -91,6 +91,10 @@ export default {
     // 切换项目后刷新页面并重新赋值
     projectId(newData) {
       localStorage.setItem('projectId', newData)
+      const { mold } = this.projectList.find((item) => {
+        return item.id === newData
+      })
+      localStorage.setItem('mold', mold)
       window.location.reload()
     }
   },
