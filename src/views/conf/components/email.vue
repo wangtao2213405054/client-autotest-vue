@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card shadow="hover">
     <div slot="header" class="clearfix">
       <span style="float: left">
         <strong>邮件配置</strong>

@@ -55,10 +55,10 @@
         <el-button type="success" @click="openDialog">添 加</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="elementList" stripe style="width: 100%">
+    <el-table header-row-class-name="table-header-style" :data="elementList" stripe style="width: 100%">
       <el-table-column type="index" label="编号" width="60" align="center" />
-      <el-table-column prop="name" label="元素名称" width="250px" />
-      <el-table-column prop="label" label="元素内容" width="250px" />
+      <el-table-column prop="name" label="元素名称" width="200px" />
+      <el-table-column prop="label" label="元素内容" width="200px" />
       <el-table-column prop="desc" label="元素描述" show-overflow-tooltip />
       <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
       <el-table-column label="操作" width="120px" align="center">
@@ -147,7 +147,6 @@ export default {
       this.requestForm.total = total
     },
     async deleteElementInfo(id) {
-      console.log(id, 'deleteId')
       const clickConfirmResult = await this.$confirm('此操作将永久删除该元素, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -182,6 +181,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+::v-deep .table-header-style th {
+  background-color: #E4E7ED;
+  color: #303133;
+}
 </style>
