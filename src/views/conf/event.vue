@@ -173,7 +173,7 @@
                 </el-form-item>
                 <el-form-item
                   v-if="items.type === 'select'"
-                  label="数据类型"
+                  label="选择器"
                   :prop="'func.' + index + '.selectModel'"
                   :rules="[
                     { required: true, message: '请选择选择器的展示类型', trigger: 'blur' },
@@ -349,7 +349,8 @@ export default {
         { key: 'DataType', value: '数据类型选择器' },
         { key: 'Boolean', value: '布尔选择器' },
         { key: 'Element', value: '元素选择器' },
-        { key: 'Api', value: '接口选择器' }
+        { key: 'Api', value: '接口选择器' },
+        { key: 'ElementIndex', value: '元素位置选择器' }
       ],
       eventList: [],
       requestForm: {
