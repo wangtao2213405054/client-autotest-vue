@@ -201,6 +201,28 @@ aside {
   }
 }
 
+.yellow-button {
+  color: #E6A23C;
+  &:hover,
+  &:focus {
+    color: rgba(230, 162, 60, 0.8);
+  }
+  &:active {
+    color: #c2811f;
+  }
+}
+
+.green_button {
+  color: #67C23A;
+  &:hover,
+  &:focus {
+    color: rgba(103, 194, 58, 0.8);
+  }
+  &:active {
+    color: #50be1a;
+  }
+}
+
 .page-right {
   text-align: right;
   margin-top: 15px

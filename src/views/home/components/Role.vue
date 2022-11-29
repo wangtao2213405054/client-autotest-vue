@@ -159,6 +159,12 @@ export default {
     handleCurrentChange(newPage) {
       this.requestForm.page = newPage
       this.getRoleList()
+      // 返回顶部
+      window.scrollTo({
+        left: 0,
+        top: 0,
+        behavior: 'smooth'
+      })
     },
     // 查询角色列表
     queryRoleList() {

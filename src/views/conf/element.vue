@@ -52,7 +52,7 @@
     </el-dialog>
     <el-form style="text-align: right">
       <el-form-item>
-        <el-button type="success" @click="openDialog">添 加</el-button>
+        <el-button icon="el-icon-plus" type="success" @click="openDialog">添 加</el-button>
       </el-form-item>
     </el-form>
     <el-table header-row-class-name="table-header-style" :data="elementList" stripe style="width: 100%">
@@ -85,6 +85,7 @@
       :page-size="requestForm.size"
       layout="total, prev, pager, next"
       :total="requestForm.total"
+      @current-change="handleCurrentChange"
     />
   </el-card>
 </template>
@@ -176,6 +177,17 @@ export default {
         platform: []
       }
       this.$refs.addFormRef.clearValidate()
+    },
+    // 页码改变
+    handleCurrentChange(newPage) {
+      this.requestForm.page = newPage
+      this.getElementList()
+      // 返回顶部
+      window.scrollTo({
+        left: 0,
+        top: 0,
+        behavior: 'smooth'
+      })
     }
   }
 }

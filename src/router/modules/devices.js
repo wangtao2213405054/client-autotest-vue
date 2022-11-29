@@ -13,23 +13,33 @@ const devices = {
   },
   children: [
     {
-      path: 'driver',
-      component: () => import('@/views/devices/driver'),
-      name: 'DevicesDriver',
+      path: 'master',
+      component: () => import('@/views/devices/master'),
+      name: 'DevicesMaster',
       meta: {
         title: '驱动设备',
         icon: 'coke-icon-computer',
-        roles: ['DevicesDriver']
+        roles: ['DevicesMaster']
       }
     },
     {
-      path: 'execute',
-      component: () => import('@/views/devices/execute'),
-      name: 'DevicesExecute',
+      path: 'worker',
+      component: () => import('@/views/devices/worker'),
+      name: 'DevicesWorker',
       meta: {
         title: '测试设备',
         icon: 'coke-icon-phone',
-        roles: ['DevicesExecute']
+        roles: ['DevicesWorker']
+      }
+    },
+    {
+      path: 'capabilities',
+      component: () => import('@/views/devices/capabilities'),
+      name: 'DevicesCapabilities',
+      meta: {
+        title: '能力映射',
+        icon: 'coke-icon-capabilities',
+        roles: ['DevicesCapabilities']
       }
     }
   ]

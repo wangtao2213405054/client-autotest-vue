@@ -199,7 +199,8 @@ export default {
         mobile: [{ required: true, message: '请输入正确的手机号', trigger: 'blur' }, { min: 11, max: 11, message: '长度在 11 个字符', trigger: 'blur' }],
         email: [{ required: true, message: '请输入正确的邮箱', trigger: 'blur' }, { min: 5, max: 60, message: '长度在 5 到 60 个字符', trigger: 'blur' }],
         password: [{ required: true, message: '请输入正确的密码', trigger: 'blur' }, { min: 8, max: 30, message: '长度在 8 到 30 个字符', trigger: 'blur' }],
-        department: [{ required: true, message: '请选择正确的所属部门', trigger: 'blur' }]
+        department: [{ required: true, message: '请选择正确的所属部门', trigger: 'blur' }],
+        role: [{ required: true, message: '请选择角色信息', trigger: 'blur' }]
       },
       roleList: [],
       tableLoading: false,
@@ -222,6 +223,12 @@ export default {
     handleCurrentChange(newPage) {
       this.requestForm.page = newPage
       this.getManagementList()
+      // 返回顶部
+      window.scrollTo({
+        left: 0,
+        top: 0,
+        behavior: 'smooth'
+      })
     },
     // 新增/修改用户
     editManagementInfo() {

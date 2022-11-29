@@ -63,9 +63,10 @@
     <el-pagination
       style="text-align: right"
       background
-      :page-size="4"
+      :page-size="requestForm.pageSize"
       layout="total, prev, pager, next"
       :total="requestForm.total"
+      @current-change="handleCurrentChange"
     />
   </div>
 </template>
@@ -131,6 +132,17 @@ export default {
       const { items, total } = await getProjectList(this.requestForm)
       this.projectList = items
       this.requestForm.total = total
+    },
+    // 页码改变
+    handleCurrentChange(newPage) {
+      this.requestForm.page = newPage
+      this.getProjectList()
+      // 返回顶部
+      window.scrollTo({
+        left: 0,
+        top: 0,
+        behavior: 'smooth'
+      })
     },
     // 关闭弹窗
     closeDialog() {

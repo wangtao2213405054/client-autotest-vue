@@ -49,9 +49,10 @@ export default {
 
 <style lang="scss">
 // fix css style bug in open el-dialog
-.el-popup-parent--hidden {
-  .fixed-header {
-    padding-right: 15px;
-  }
-}
+// 我不清楚是修复什么问题, 但是使用时 title会位置偏移, 所以我注释掉了
+//.el-popup-parent--hidden {
+//  .fixed-header {
+//    padding-right: 15px;
+//  }
+//}
 </style>

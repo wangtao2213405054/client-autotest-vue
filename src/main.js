@@ -37,7 +37,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 Element.Dialog.props.lockScroll.default = false // 修复 dialog 打开时右侧出现抖动的问题
-// Element.MessageBox.props.lockScroll.default = false
 Vue.use(Element, {
   size: Cookies.get('size') || 'small' // 设置 element 组件全局大小
   // locale: enLang // 如果使用中文，无需设置，请删除
