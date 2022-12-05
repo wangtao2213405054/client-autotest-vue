@@ -410,8 +410,8 @@ export default {
       this.chartData.series[0].data.push(newData.cpu.percent)
       this.chartData.series[1].data.push(newData.virtual.percent)
       this.networkData.xAxis[0].data.push(newData.currentTime)
-      this.networkData.series[0].data.push(newData.network.send)
-      this.networkData.series[1].data.push(newData.network.recv)
+      this.networkData.series[0].data.push(newData['network'].send)
+      this.networkData.series[1].data.push(newData['network'].recv)
 
       this.chart.setOption(this.chartData)
       this.networkChart.setOption(this.networkData)
@@ -454,13 +454,13 @@ export default {
       // console.log(value)
       this.info = value
       this.startedTime = value.startedTime
-      this.diskTotal = value.disk.total
-      this.diskUsed = value.disk.used
-      this.diskFree = value.disk.free
+      this.diskTotal = value['disk'].total
+      this.diskUsed = value['disk'].used
+      this.diskFree = value['disk'].free
       this.cpuCount = value.cpu.count
-      this.cpuLogical = value.cpu.logical
+      this.cpuLogical = value.cpu['logical']
       this.virtualTotal = value.virtual.total
-      this.virtualAvailable = value.virtual.available
+      this.virtualAvailable = value.virtual['available']
     }
   }
 }

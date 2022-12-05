@@ -16,6 +16,12 @@
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
 
+        <div id="message" class="right-menu-item hover-effect" style="margin-right: 10px">
+          <el-badge :value="100" :max="99">
+            <svg-icon class-name="size-icon" icon-class="coke-icon-message" />
+          </el-badge>
+        </div>
+
         <el-select
           v-model="projectId"
           placeholder="切换项目"
@@ -207,5 +213,14 @@ export default {
       }
     }
   }
+}
+::v-deep .el-badge {
+  position: relative;
+  vertical-align: middle;
+  display: table-caption;
+}
+::v-deep .el-badge__content.is-fixed {
+  right: 12px;
+  margin-top: 13px;
 }
 </style>
