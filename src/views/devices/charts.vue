@@ -1,5 +1,5 @@
 <template>
-  <div class="wrap" style="padding-top: 20px; background: #394056">
+  <div v-loading="loading" class="wrap" style="padding-top: 20px; background: #394056">
     <div style="height: 70px; ">
       <el-row :gutter="20">
         <el-col :span="6">
@@ -94,6 +94,7 @@ export default {
   data() {
     return {
       roomId: null,
+      loading: false,
       like: true,
       chart: null,
       networkChart: null,
@@ -439,19 +440,18 @@ export default {
   },
   methods: {
     joinDeviceRoom() {
-      // console.log('join room')
       this.$socket.emit('joinRoom', { roomId: this.roomId })
-      // console.log('join room')
     },
     initChart() {
+      this.loading = true
       this.chart = echarts.init(document.getElementById(this.id))
       this.networkChart = echarts.init(document.getElementById(this.networkId))
-      // this.chart.setOption(this.chartData)
     }
   },
   sockets: {
     clientSystemInfo(value) {
       // console.log(value)
+      this.loading = false
       this.info = value
       this.startedTime = value.startedTime
       this.diskTotal = value['disk'].total
