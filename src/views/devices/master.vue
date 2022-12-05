@@ -123,7 +123,7 @@
     </el-form>
     <el-table header-row-class-name="table-header-style" :data="masterList" stripe style="width: 100%">
       <el-table-column type="index" label="编号" width="60" align="center" />
-      <el-table-column prop="name" label="设备名称" width="200px" />
+      <el-table-column prop="name" label="设备名称" width="150px" />
       <el-table-column label="角色信息" width="150px">
         <template slot-scope="scope">
           <div v-for="item in roleList" :key="item.id">
@@ -131,11 +131,16 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="maxContext" label="最大进程" width="100px" />
-      <el-table-column prop="context" label="已绑设备" width="100px" />
+      <el-table-column prop="maxContext" label="最大进程" width="80px" />
+      <el-table-column prop="context" label="已绑设备" width="80px" />
       <el-table-column prop="desc" label="事件描述" show-overflow-tooltip />
+      <el-table-column prop="online" label="设备状态" width="80px">
+        <template slot-scope="scope">
+          <el-tag effect="dark" :type="scope.row.online ? 'success' : 'info'">{{ scope.row.online ? '在线' : '离线' }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
-      <el-table-column label="操作" width="180px" align="center">
+      <el-table-column label="操作" width="240px" align="center">
         <template slot-scope="scope">
           <el-button
             :icon="scope.row.status ? 'el-icon-video-pause' : 'el-icon-video-play'"
@@ -144,6 +149,13 @@
             type="text"
             @click.stop="updateDeviceStatus(scope.row.id, scope.row.status)"
           >{{ scope.row.status ? '关闭' : '开启' }}</el-button>
+          <el-button
+            icon="el-icon-data-line"
+            class="green_button"
+            size="mini"
+            type="text"
+            @click.stop="toCharts(scope.row.id)"
+          >性能</el-button>
           <el-button
             icon="el-icon-edit"
             size="mini"
@@ -174,7 +186,13 @@
 <script>
 import { getRoleList } from '@/api/permissions/role'
 import { getProjectList } from '@/api/business/project'
-import { deleteMasterList, editMasterInfo, getMasterList, editMasterStatus } from '@/api/devices/master'
+import {
+  deleteMasterList,
+  editMasterInfo,
+  getMasterList,
+  editMasterStatus,
+  statusMasterRoom
+} from '@/api/devices/master'
 import clip from '@/utils/clipboard'
 
 export default {
@@ -323,6 +341,12 @@ export default {
         top: 0,
         behavior: 'smooth'
       })
+    },
+    // 进入性能监控页面
+    async toCharts(id) {
+      // this.$socket.open()
+      const roomId = await statusMasterRoom({ id: id })
+      this.$router.push({ name: 'DevicesProperty', params: { id: roomId.toString() }})
     }
   }
 }

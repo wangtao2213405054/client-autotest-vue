@@ -41,6 +41,10 @@ module.exports = {
       '/api/v1/client': {
         target: 'http://127.0.0.1:5000/', // 跨域后的 url
         changeOrigin: true // 允许跨域
+      },
+      '/': {
+        target: 'http://127.0.0.1:5000/', // 跨域后的 url
+        changeOrigin: true // 允许跨域
       }
     }
   },

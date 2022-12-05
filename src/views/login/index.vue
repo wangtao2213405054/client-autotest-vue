@@ -150,6 +150,11 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+  background-image: url("../../assets/94628268331f4a9b92c0c36f5f4b196b.jpg");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+
   .el-input {
     display: inline-block;
     height: 47px;
@@ -166,8 +171,9 @@ $cursor: #fff;
       caret-color: $cursor;
 
       &:-webkit-autofill {
-        box-shadow: 0 0 0 1000px $bg inset !important;
+        //box-shadow: 0 0 0 1000px $bg inset !important;
         -webkit-text-fill-color: $cursor !important;
+        transition: background-color 0s linear 3600s; // 修复自动填充时显示背景色的问题
       }
     }
   }

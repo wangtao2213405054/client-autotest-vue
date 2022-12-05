@@ -41,6 +41,16 @@ const devices = {
         icon: 'coke-icon-capabilities',
         roles: ['DevicesCapabilities']
       }
+    },
+    {
+      path: '/property/:id',
+      component: () => import('@/views/devices/charts'),
+      hidden: true,
+      name: 'DevicesProperty',
+      meta: {
+        title: '性能监控',
+        activeMenu: '/devices/master'
+      }
     }
   ]
 }

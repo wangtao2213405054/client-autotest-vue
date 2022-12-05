@@ -35,3 +35,12 @@ export function editMasterStatus(data) {
     data
   })
 }
+
+// 获取房间信息
+export function statusMasterRoom(data) {
+  return request({
+    url: '/devices/master/socket',
+    method: 'POST',
+    data
+  })
+}

@@ -49,7 +49,7 @@ export default {
         backgroundColor: '#394056',
         title: {
           top: 20,
-          text: 'Requests',
+          text: '性能图',
           textStyle: {
             fontWeight: 'normal',
             fontSize: 16,

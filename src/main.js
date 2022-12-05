@@ -21,6 +21,7 @@ import './utils/error-log' // error log
 import * as filters from './filters' // global filters
 
 import CodeEditor from 'bin-code-editor'
+import '@/utils/socket'
 
 /**
  * If you don't want to use mock-server
@@ -31,10 +32,10 @@ import CodeEditor from 'bin-code-editor'
  * please remove it before going online ! ! !
  */
 
-if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
-  mockXHR()
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const { mockXHR } = require('../mock')
+//   mockXHR()
+// }
 
 Element.Dialog.props.lockScroll.default = false // 修复 dialog 打开时右侧出现抖动的问题
 Vue.use(Element, {
