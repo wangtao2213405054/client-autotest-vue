@@ -93,6 +93,7 @@ export default {
   mixins: [resize],
   data() {
     return {
+      roomId: null,
       like: true,
       chart: null,
       networkChart: null,
@@ -417,6 +418,8 @@ export default {
     }
   },
   mounted() {
+    // 进入组件时需要将 route params 中的值拿出来放在组件的生命周期中，不然调用 beforeDestroy 钩子时会获取不到 params 中的值
+    this.roomId = this.$route.params.id
     this.joinDeviceRoom()
     this.initChart()
   },
@@ -432,17 +435,13 @@ export default {
     this.networkChart.dispose()
     this.networkChart = null
     // 退出房间
-    this.$socket.emit('leaveRoom', { roomId: this.$route.params.id })
+    this.$socket.emit('leaveRoom', { roomId: this.roomId })
   },
   methods: {
     joinDeviceRoom() {
       // console.log('join room')
-      this.$socket.emit('joinRoom', { roomId: this.$route.params.id })
-      console.log('join room')
-    },
-    openSocket() {
-      // 开始连接 socket
-      this.$socket.open()
+      this.$socket.emit('joinRoom', { roomId: this.roomId })
+      // console.log('join room')
     },
     initChart() {
       this.chart = echarts.init(document.getElementById(this.id))

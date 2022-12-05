@@ -22,6 +22,7 @@ import * as filters from './filters' // global filters
 
 import CodeEditor from 'bin-code-editor'
 import '@/utils/socket'
+import sockets from '@/utils/global-socket'
 
 /**
  * If you don't want to use mock-server
@@ -56,5 +57,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  sockets,
   render: h => h(App)
 })

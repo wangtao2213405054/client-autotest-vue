@@ -124,17 +124,17 @@
     <el-table header-row-class-name="table-header-style" :data="masterList" stripe style="width: 100%">
       <el-table-column type="index" label="编号" width="60" align="center" />
       <el-table-column prop="name" label="设备名称" width="150px" />
-      <el-table-column label="角色信息" width="150px">
+      <el-table-column label="角色信息" width="120px">
         <template slot-scope="scope">
           <div v-for="item in roleList" :key="item.id">
             <span v-if="scope.row.role === item.id"> {{ item.name }}</span>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="maxContext" label="最大进程" width="80px" />
-      <el-table-column prop="context" label="已绑设备" width="80px" />
+      <el-table-column prop="maxContext" label="最大进程" width="70px" align="center" />
+      <el-table-column prop="context" label="已绑设备" width="70px" align="center" />
       <el-table-column prop="desc" label="事件描述" show-overflow-tooltip />
-      <el-table-column prop="online" label="设备状态" width="80px">
+      <el-table-column prop="online" label="设备状态" width="80px" align="center">
         <template slot-scope="scope">
           <el-tag effect="dark" :type="scope.row.online ? 'success' : 'info'">{{ scope.row.online ? '在线' : '离线' }}</el-tag>
         </template>

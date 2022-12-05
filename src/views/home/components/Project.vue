@@ -122,7 +122,6 @@ export default {
   methods: {
     // 进入项目详情页面
     enterProjectPage(id, mold) {
-      console.log('点击测试呀' + id)
       localStorage.setItem('projectId', id)
       localStorage.setItem('mold', mold)
       this.$router.push('/dashboard')
