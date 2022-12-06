@@ -1,258 +1,149 @@
 <template>
-  <div class="wrap">
-    <button @click="openSocket">连接Socket</button>
-    <button @click="socketSendmsg">发送数据</button>
-    <div :id="id" class="chart" style="height: calc(100vh - 84px); width: 100%" />
-  </div>
+  <el-card>
+    <el-dialog
+      :title="title"
+      :visible.sync="dialogVisible"
+      width="50%"
+      @close="closeDialog"
+    >
+      <el-form ref="addFormRef" :model="addForm" label-width="150px">
+        <el-form-item
+          label="设备名称"
+          prop="name"
+          :rules="[
+            { required: true, message: '请输入设备名称', trigger: 'blur' },
+            { min: 2, max: 32, message: '长度在 2 到 32 个字符', trigger: 'blur' }
+          ]"
+        >
+          <el-input v-model="addForm.name" placeholder="请输入设备名称" clearable />
+        </el-form-item>
+        <el-form-item
+          label="所属平台"
+          prop="platformName"
+          :rules="[
+            { required: true, message: '请选择所属平台', trigger: 'blur' }
+          ]"
+        >
+          <el-select
+            v-model="addForm.platformName"
+            placeholder="请选择所属平台"
+            clearable
+            value-key="id"
+            @visible-change="getMappingList"
+            @change="changePlatform"
+          >
+            <el-option
+              v-for="item in mappingList"
+              :key="item.id"
+              :label="item.name"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-for="(mapping, index) in setMappingList"
+          :key="mapping.key"
+          :label="mapping.param"
+          :prop="'mapping.' + index + '.value'"
+          :rules="{required: true, message: mapping.param + '不能为空', trigger: 'blur'}"
+        >
+          <el-input
+            v-if="mapping.type === 'input'"
+            v-model="addForm.mapping[index].value"
+            clearable
+            :placeholder="mapping.title"
+          />
+          <el-select
+            v-else
+            v-model="addForm.mapping[index].value"
+            :placeholder="mapping.title"
+            clearable
+          >
+            <el-option
+              v-for="item in mapping.source"
+              :key="item.key"
+              :label="item.label"
+              :value="item.param"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-form ref="requestFormRef" :model="requestForm" inline>
+      <el-form-item>
+        <el-button icon="el-icon-plus" type="success" @click="addDevice">添 加</el-button>
+      </el-form-item>
+    </el-form>
+  </el-card>
 </template>
 
 <script>
-import { joinMasterRoom } from '@/api/devices/master'
-import echarts from 'echarts'
-import resize from '@/components/Charts/mixins/resize'
+import { getCapabilitiesList } from '@/api/devices/capabilities'
 
 export default {
-  mixins: [resize],
   data() {
     return {
-      chart: null,
-      id: 'chart',
-      info: {},
-      chartData: {
-        backgroundColor: '#394056',
-        title: {
-          top: 20,
-          text: '性能图',
-          textStyle: {
-            fontWeight: 'normal',
-            fontSize: 16,
-            color: '#F1F1F3'
-          },
-          left: '1%'
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            lineStyle: {
-              color: '#57617B'
-            }
-          }
-        },
-        legend: {
-          top: 20,
-          icon: 'rect',
-          itemWidth: 14,
-          itemHeight: 5,
-          itemGap: 13,
-          data: ['CPU', 'Network', 'Disk'],
-          right: '4%',
-          textStyle: {
-            fontSize: 12,
-            color: '#F1F1F3'
-          }
-        },
-        grid: {
-          top: 100,
-          left: '2%',
-          right: '2%',
-          bottom: '2%',
-          containLabel: true
-        },
-        xAxis: [{
-          type: 'category',
-          boundaryGap: false,
-          axisLine: {
-            lineStyle: {
-              color: '#57617B'
-            }
-          },
-          data: []
-        }],
-        yAxis: [{
-          type: 'value',
-          name: '(%)',
-          axisTick: {
-            show: false
-          },
-          axisLine: {
-            lineStyle: {
-              color: '#57617B'
-            }
-          },
-          axisLabel: {
-            margin: 10,
-            textStyle: {
-              fontSize: 14
-            }
-          },
-          splitLine: {
-            lineStyle: {
-              color: '#57617B'
-            }
-          }
-        }],
-        series: [{
-          name: 'CPU',
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 5,
-          showSymbol: false,
-          lineStyle: {
-            normal: {
-              width: 1
-            }
-          },
-          areaStyle: {
-            normal: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-                offset: 0,
-                color: 'rgba(137, 189, 27, 0.3)'
-              }, {
-                offset: 0.8,
-                color: 'rgba(137, 189, 27, 0)'
-              }], false),
-              shadowColor: 'rgba(0, 0, 0, 0.1)',
-              shadowBlur: 10
-            }
-          },
-          itemStyle: {
-            normal: {
-              color: 'rgb(137,189,27)',
-              borderColor: 'rgba(137,189,2,0.27)',
-              borderWidth: 12
-
-            }
-          },
-          data: []
-        }, {
-          name: 'Network',
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 5,
-          showSymbol: false,
-          lineStyle: {
-            normal: {
-              width: 1
-            }
-          },
-          areaStyle: {
-            normal: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-                offset: 0,
-                color: 'rgba(0, 136, 212, 0.3)'
-              }, {
-                offset: 0.8,
-                color: 'rgba(0, 136, 212, 0)'
-              }], false),
-              shadowColor: 'rgba(0, 0, 0, 0.1)',
-              shadowBlur: 10
-            }
-          },
-          itemStyle: {
-            normal: {
-              color: 'rgb(0,136,212)',
-              borderColor: 'rgba(0,136,212,0.2)',
-              borderWidth: 12
-
-            }
-          },
-          data: []
-        }, {
-          name: 'Disk',
-          type: 'line',
-          smooth: true,
-          symbol: 'circle',
-          symbolSize: 5,
-          showSymbol: false,
-          lineStyle: {
-            normal: {
-              width: 1
-            }
-          },
-          areaStyle: {
-            normal: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-                offset: 0,
-                color: 'rgba(219, 50, 51, 0.3)'
-              }, {
-                offset: 0.8,
-                color: 'rgba(219, 50, 51, 0)'
-              }], false),
-              shadowColor: 'rgba(0, 0, 0, 0.1)',
-              shadowBlur: 10
-            }
-          },
-          itemStyle: {
-            normal: {
-              color: 'rgb(219,50,51)',
-              borderColor: 'rgba(219,50,51,0.2)',
-              borderWidth: 12
-            }
-          },
-          data: []
-        }]
-      }
+      requestForm: {},
+      dialogVisible: false,
+      title: '添加设备',
+      addForm: {
+        name: null,
+        platformName: null,
+        mapping: []
+      },
+      mappingList: [],
+      setMappingList: []
     }
-  },
-  watch: {
-    info(newData) {
-      // if (this.chartData.xAxis[0].data.length >= 50) {
-      //   this.chartData.xAxis[0].data.splice(0, 1)
-      //   this.chartData.series[0].data.splice(0, 1)
-      //   this.chartData.series[1].data.splice(0, 1)
-      //   this.chartData.series[2].data.splice(0, 1)
-      // }
-      this.chartData.xAxis[0].data.push(newData.currentTime)
-      this.chartData.series[0].data.push(newData.cpu.percent)
-      this.chartData.series[1].data.push(newData.virtual.percent)
-      this.chartData.series[2].data.push(newData.disk.percent)
-      this.chart.setOption(this.chartData)
-    }
-  },
-  // beforeDestroy() {
-  //   // 关闭 Socket
-  //   this.sockets.unsubscribe('testCall')
-  //   this.$socket.close()
-  // },
-  mounted() {
-    this.initChart()
-  },
-  beforeDestroy() {
-    if (!this.chart) {
-      return
-    }
-    this.chart.dispose()
-    this.chart = null
   },
   methods: {
-    openSocket() {
-      // 开始连接 socket
-      this.$socket.open()
+    // 关闭弹窗钩子
+    closeDialog() {},
+    // 添加设备
+    addDevice() {
+      this.title = '添加设备'
+      this.dialogVisible = true
     },
-    // 发送消息
-    async socketSendmsg() {
-      await joinMasterRoom({ id: 3 })
+    // 提交表单
+    submitForm() {
+      this.$refs.addFormRef.validate(async(valid) => {
+        if (valid) {
+          this.addForm.platformName = this.addForm.platformName.platformName
+          // await editMasterInfo(this.addForm)
+          this.$message.success('保存成功')
+          // this.dialogVisible = false
+          // await this.getMasterList()
+        } else {
+          this.$message.error('请检查信息是否完善')
+        }
+      })
     },
-    initChart() {
-      this.chart = echarts.init(document.getElementById(this.id))
-
-      // this.chart.setOption(this.chartData)
-    }
-  },
-  sockets: {
-    clientSystemInfo(value) {
-      // console.log(value)
-      this.info = value
+    // 获取映射列表
+    async getMappingList() {
+      const { items } = await getCapabilitiesList({ page: 1, pageSize: 9999 })
+      this.mappingList = items
+    },
+    // 所属平台变化时的钩子
+    changePlatform(value) {
+      const { mapping } = value
+      this.addForm.mapping = []
+      for (let i = 0; i < mapping.length; i++) {
+        this.addForm.mapping.push({
+          param: mapping[i]['param'],
+          value: mapping[i]['default'] ? mapping[i]['default'] : null,
+          type: mapping[i]['dataType'],
+          key: mapping[i]['key']
+        })
+      }
+      this.setMappingList = mapping
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.item {
-  margin-top: 10px;
-  margin-right: 40px;
-}
+
 </style>

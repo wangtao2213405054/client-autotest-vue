@@ -130,7 +130,7 @@
                     <el-col :span="7">
                       <el-form-item
                         label="绑定变量"
-                        :prop="'func.' + index + '.source.' + i + '.param'"
+                        :prop="'mapping.' + index + '.source.' + i + '.param'"
                         :rules="[
                           { required: true, message: '请输入绑定变量', trigger: 'blur' },
                           { min: 2, max: 64, message: '长度在 2 到 64 个字符', trigger: 'blur' }
@@ -146,7 +146,7 @@
                     <el-col :span="7">
                       <el-form-item
                         label="绑定类型"
-                        :prop="'func.' + index + '.source.' + i + '.dataType'"
+                        :prop="'mapping.' + index + '.source.' + i + '.dataType'"
                         :rules="[
                           { required: true, message: '请选择参数变量的数据类型', trigger: 'blur' },
                         ]"
@@ -173,7 +173,7 @@
                     <el-col :span="7">
                       <el-form-item
                         label="绑定标题"
-                        :prop="'func.' + index + '.source.' + i + '.label'"
+                        :prop="'mapping.' + index + '.source.' + i + '.label'"
                         :rules="[
                           { required: true, message: '请输入绑定标题', trigger: 'blur' },
                           { min: 2, max: 6, message: '长度在 2 到 6 个字符', trigger: 'blur' }

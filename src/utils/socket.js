@@ -15,7 +15,8 @@ if (!getToken()) {
 } else {
   initSocket(getToken())
 }
-function getToken() { // 获取登录标识---请修改为自己项目标识
+
+function getToken() { // 获取登录标识
   return store.getters.token
 }
 
@@ -28,7 +29,7 @@ async function initSocket(token) {
   // const socketUrl = `${protocol}//${ip}:${port}?userId=${userId}`
   // console.log('socketUrl', socketUrl)
   console.log(token, 'this.is test')
-  const socketUrl = 'http://127.0.0.1:5000' // 本地测试地址---nodejs服务代码放后面
+  const socketUrl = 'http://127.0.0.1:5000'
   const socket = new VueSocketIO({
     debug: process.env.NODE_ENV !== 'production',
     connection: SocketIo(socketUrl, {

@@ -17,9 +17,7 @@
         </el-tooltip>
 
         <div id="message" class="right-menu-item hover-effect" style="margin-right: 10px">
-          <el-badge :value="100" :max="99">
-            <svg-icon class-name="size-icon" icon-class="coke-icon-message" />
-          </el-badge>
+          <message />
         </div>
 
         <el-select
@@ -68,6 +66,7 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
+import Message from '@/components/Message'
 import { getProjectList } from '@/api/business/project'
 
 export default {
@@ -77,7 +76,8 @@ export default {
     ErrorLog,
     Screenfull,
     SizeSelect,
-    Search
+    Search,
+    Message
   },
   data() {
     return {
@@ -213,14 +213,5 @@ export default {
       }
     }
   }
-}
-::v-deep .el-badge {
-  position: relative;
-  vertical-align: middle;
-  display: table-caption;
-}
-::v-deep .el-badge__content.is-fixed {
-  right: 12px;
-  margin-top: 13px;
 }
 </style>
