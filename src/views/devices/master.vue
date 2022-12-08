@@ -102,7 +102,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="requestForm.status" placeholder="选择状态进行查询" clearable @visible-change="getProjectList">
+        <el-select v-model="requestForm.status" placeholder="选择状态进行查询" clearable>
           <el-option
             v-for="item in statusList"
             :key="item.key"
@@ -313,6 +313,7 @@ export default {
       this.requestForm.projectId = null
       this.requestForm.status = null
       this.$refs.requestFormRef.resetFields()
+      this.queryDeviceList()
     },
     // 查询角色列表
     queryDeviceList() {

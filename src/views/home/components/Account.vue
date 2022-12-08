@@ -263,6 +263,7 @@ export default {
     // 重置查询表单
     refreshQuery() {
       this.$refs.requestForm.resetFields()
+      this.queryGetList()
     },
     // 重置提交表单
     closeResetFields() {

@@ -199,6 +199,7 @@ export default {
       this.requestForm.name = ''
       this.requestForm.identifier = ''
       this.$refs.requestFormRef.resetFields()
+      this.queryRoleList()
     },
     // 删除角色信息
     async deleteRoleInfo(id) {

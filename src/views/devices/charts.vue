@@ -450,7 +450,6 @@ export default {
   },
   sockets: {
     clientSystemInfo(value) {
-      // console.log(value)
       this.loading = false
       this.info = value
       this.startedTime = value.startedTime

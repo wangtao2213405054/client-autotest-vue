@@ -192,6 +192,7 @@ export default {
         name: null,
         identifier: null
       }
+      this.getPermissionsList()
     }
   }
 }

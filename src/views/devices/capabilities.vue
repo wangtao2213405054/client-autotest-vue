@@ -61,15 +61,29 @@
               </template>
               <div class="borderDiv">
                 <el-form-item
-                  label="映射说明"
+                  label="映射名称"
                   :prop="'mapping.' + index + '.title'"
+                  :rules="[
+                    { required: true, message: '请输入映射名称', trigger: 'blur' },
+                    { min: 1, max: 6, message: '长度在 1 到 6 个字符', trigger: 'blur' }
+                  ]"
+                >
+                  <el-input
+                    v-model="items.title"
+                    placeholder="请输入映射名称"
+                    clearable
+                  />
+                </el-form-item>
+                <el-form-item
+                  label="映射说明"
+                  :prop="'mapping.' + index + '.docs'"
                   :rules="[
                     { required: true, message: '请输入映射说明', trigger: 'blur' },
                     { min: 1, max: 40, message: '长度在 1 到 40 个字符', trigger: 'blur' }
                   ]"
                 >
                   <el-input
-                    v-model="items.title"
+                    v-model="items.docs"
                     placeholder="请输入映射说明"
                     clearable
                   />
@@ -176,7 +190,7 @@
                         :prop="'mapping.' + index + '.source.' + i + '.label'"
                         :rules="[
                           { required: true, message: '请输入绑定标题', trigger: 'blur' },
-                          { min: 2, max: 6, message: '长度在 2 到 6 个字符', trigger: 'blur' }
+                          { min: 1, max: 6, message: '长度在 1 到 6 个字符', trigger: 'blur' }
                         ]"
                       >
                         <el-input
@@ -306,6 +320,7 @@ export default {
       this.addForm.mapping.push({
         type: funcType,
         title: null,
+        docs: null,
         param: null,
         source: [],
         dataType: null,

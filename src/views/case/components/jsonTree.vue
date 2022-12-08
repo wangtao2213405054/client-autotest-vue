@@ -155,7 +155,6 @@ export default {
         level: 2,
         children: []
       }
-      console.log(data, '123321312')
       if (!data.children) {
         this.$set(data, 'children', [])
       }

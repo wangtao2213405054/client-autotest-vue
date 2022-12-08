@@ -17,7 +17,7 @@ const devices = {
       component: () => import('@/views/devices/master'),
       name: 'DevicesMaster',
       meta: {
-        title: '驱动设备',
+        title: '控制设备',
         icon: 'coke-icon-computer',
         roles: ['DevicesMaster']
       }
@@ -27,7 +27,7 @@ const devices = {
       component: () => import('@/views/devices/worker'),
       name: 'DevicesWorker',
       meta: {
-        title: '测试设备',
+        title: '执行设备',
         icon: 'coke-icon-phone',
         roles: ['DevicesWorker']
       }
