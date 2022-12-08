@@ -34,7 +34,10 @@ async function initSocket(token) {
     debug: process.env.NODE_ENV !== 'production',
     connection: SocketIo(socketUrl, {
       extraHeaders: { token: token },
-      autoConnect: true // 已通过验证，全局使用可默认打开，组件内使用则默认关闭，使用时在打开
+      autoConnect: true, // 已通过验证，全局使用可默认打开，组件内使用则默认关闭，使用时在打开
+      // mac 下 如果为1秒时，会出现跨域问题, 重连会失败, 在 python-socket io 库中也出现了此问题, 经过调试后发现当重连过于频繁时,
+      // 服务器会返回403, 但是在服务器中并没有收到任何的请求信息
+      reconnectionDelay: 5000
     })
   })
   const { emitter, io, listener } = socket
