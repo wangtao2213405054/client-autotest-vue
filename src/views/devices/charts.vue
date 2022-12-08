@@ -161,7 +161,7 @@ export default {
         }],
         yAxis: [{
           type: 'value',
-          name: '(%)',
+          name: '( % )',
           axisTick: {
             show: false
           },
@@ -304,7 +304,7 @@ export default {
         }],
         yAxis: [{
           type: 'value',
-          name: '(Kbps)',
+          name: '( KB/s )',
           axisTick: {
             show: false
           },
