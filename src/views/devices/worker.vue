@@ -408,6 +408,25 @@ export default {
       await editWorkerSwitch({ id, switch: !status, kill: clickConfirmResult === 'cancel' })
       await this.getWorkerList()
     }
+  },
+  sockets: {
+    // 更新当前设备离线状态
+    masterOnline(data) {
+      this.workerList.forEach(item => {
+        if (item.master === data.id) {
+          item.status = data.online ? 0 : 4
+        }
+      })
+    },
+    // 更新执行设备的状态
+    workerStatus(data) {
+      this.workerList.forEach(item => {
+        if (item.id === data.id) {
+          item.status = data.status
+          item.cause = data.cause
+        }
+      })
+    }
   }
 }
 </script>

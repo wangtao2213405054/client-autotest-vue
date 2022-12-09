@@ -349,6 +349,15 @@ export default {
       const roomId = await statusMasterRoom({ id: id })
       this.$router.push({ name: 'DevicesProperty', params: { id: roomId.toString() }})
     }
+  },
+  sockets: {
+    masterOnline(data) {
+      this.masterList.forEach(item => {
+        if (item.id === data.id) {
+          item.online = data.online
+        }
+      })
+    }
   }
 }
 </script>
