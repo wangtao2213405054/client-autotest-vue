@@ -184,7 +184,7 @@
             v-for="item in statusList"
             :key="item.key"
           >
-            <el-popover :content="scope.row.cause" :disabled="!scope.row.cause" placement="top" trigger="hover">
+            <el-popover :key="scope.row.cause" :content="scope.row.cause" :disabled="!scope.row.cause" placement="top" trigger="hover">
               <el-tag
                 v-if="scope.row.status === item.key"
                 slot="reference"
