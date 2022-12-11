@@ -12,6 +12,7 @@ import _case from './modules/case'
 import conf from '@/router/modules/conf'
 import mock from '@/router/modules/mock'
 import devices from '@/router/modules/devices'
+import task from '@/router/modules/task'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -115,6 +116,7 @@ export const asyncRoutes = [
   conf,
   mock,
   _case,
+  task,
   {
     path: '/test',
     component: Layout,
