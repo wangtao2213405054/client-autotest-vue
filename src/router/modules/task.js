@@ -13,13 +13,23 @@ const task = {
   },
   children: [
     {
-      path: 'master',
+      path: 'center',
       component: () => import('@/views/task/index'),
-      name: 'DevicesMaster',
+      name: 'TaskCenter',
       meta: {
         title: '任务中心',
         icon: 'coke-icon-task',
         roles: ['taskCenter']
+      }
+    },
+    {
+      path: '/report/:id',
+      component: () => import('@/views/task/report'),
+      hidden: true,
+      name: 'TaskReport',
+      meta: {
+        title: '测试报告',
+        activeMenu: '/task/center'
       }
     }
   ]

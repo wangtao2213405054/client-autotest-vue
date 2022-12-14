@@ -73,7 +73,7 @@
         <el-button icon="el-icon-plus" type="success" @click="addTask">添 加</el-button>
       </el-form-item>
     </el-form>
-    <el-table header-row-class-name="table-header-style" :data="taskList" stripe style="width: 100%">
+    <el-table header-row-class-name="table-header-style" :data="taskList" stripe style="width: 100%" @row-click="toReport">
       <el-table-column type="index" label="编号" width="60" align="center" />
       <el-table-column prop="name" label="设备名称" width="150px" />
       <el-table-column prop="name" label="任务状态" width="150px">
@@ -228,6 +228,10 @@ export default {
         top: 0,
         behavior: 'smooth'
       })
+    },
+    // 进入测试报告页面
+    toReport(row) {
+      this.$router.push({ name: 'TaskReport', params: { id: row.id }})
     }
   }
 }
