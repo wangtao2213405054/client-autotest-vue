@@ -1,9 +1,10 @@
 <template>
-  <span>接口状态管理页面</span>
+  <span>设置</span>
 </template>
 
 <script>
 export default {
+  name: 'Set'
 }
 </script>
 

@@ -23,23 +23,23 @@ const _case = {
       }
     },
     {
-      path: 'state',
-      component: () => import('@/views/case/state/index'),
-      name: 'ApiState',
+      path: 'version',
+      component: () => import('@/views/case/version'),
+      name: 'CaseVersion',
       meta: {
-        title: '接口状态',
+        title: '版本管理',
         icon: 'coke-icon-api-state',
-        roles: ['ApiState']
+        roles: ['CaseVersion']
       }
     },
     {
-      path: 'response',
-      component: () => import('@/views/case/response/index'),
-      name: 'ApiResponse',
+      path: 'set',
+      component: () => import('@/views/case/set'),
+      name: 'CaseSet',
       meta: {
-        title: '公共响应',
+        title: '用例集合',
         icon: 'coke-icon-api-response',
-        roles: ['ApiResponse']
+        roles: ['CaseSet']
       }
     },
     {
