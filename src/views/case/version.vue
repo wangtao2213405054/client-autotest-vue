@@ -215,6 +215,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+::v-deep .table-header-style th {
+  background-color: #E4E7ED;
+  color: #303133;
+}
 </style>
