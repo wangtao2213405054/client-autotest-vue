@@ -21,11 +21,21 @@
           label="平台标识"
           prop="platformName"
           :rules="[
-            { required: true, message: '请输入平台标识（platformName映射）', trigger: 'blur' },
-            { min: 2, max: 32, message: '长度在 2 到 32 个字符', trigger: 'blur' }
+            { required: true, message: '请选择平台标识（platformName映射）', trigger: 'blur' },
           ]"
         >
-          <el-input v-model="addForm.platformName" placeholder="请输入平台标识" clearable />
+          <el-select
+            v-model="addForm.platformName"
+            placeholder="请选择平台标识"
+            clearable
+          >
+            <el-option
+              v-for="item in platformList"
+              :key="item.key"
+              :label="item.label"
+              :value="item.key"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item
           v-for="(items, index) in addForm.mapping"
@@ -229,7 +239,30 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
       </span>
     </el-dialog>
-    <el-form>
+    <el-form ref="requestFormRef" :model="requestForm" inline>
+      <el-form-item>
+        <el-input v-model="requestForm.name" placeholder="输入映射名称查询" clearable />
+      </el-form-item>
+      <el-form-item>
+        <el-select
+          v-model="requestForm.platformName"
+          placeholder="选择平台映射查询"
+          clearable
+        >
+          <el-option
+            v-for="item in platformList"
+            :key="item.key"
+            :label="item.label"
+            :value="item.key"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" @click="queryCapabilitiesList">查询</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button icon="el-icon-refresh" @click="refreshRequest">重置</el-button>
+      </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-plus" type="success" @click="addMapping">添 加</el-button>
       </el-form-item>
@@ -237,7 +270,16 @@
     <el-table header-row-class-name="table-header-style" :data="capabilitiesList" stripe style="width: 100%">
       <el-table-column type="index" label="编号" width="80" align="center" />
       <el-table-column prop="name" label="映射名称" width="200px" />
-      <el-table-column prop="platformName" label="平台映射" />
+      <el-table-column prop="platformName" label="平台映射">
+        <template slot-scope="scope">
+          <div
+            v-for="item in platformList"
+            :key="item.key"
+          >
+            <span v-if="item.key === scope.row.platformName">{{ item.label }}</span>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="140px" align="center" />
       <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
       <el-table-column label="操作" width="120px" align="center">
@@ -287,15 +329,34 @@ export default {
       requestForm: {
         page: 1,
         pageSize: 20,
-        total: null
+        total: null,
+        platformName: null,
+        name: null
       },
-      capabilitiesList: []
+      capabilitiesList: [],
+      platformList: [
+        { key: 'android', label: 'Android' },
+        { key: 'ios', label: 'iOS' },
+        { key: 'web', label: 'Web' }
+      ]
     }
   },
   created() {
     this.getCapabilitiesList()
   },
   methods: {
+    // 条件查询
+    queryCapabilitiesList() {
+      this.requestForm.page = 1
+      this.getCapabilitiesList()
+    },
+    // 重置请求信息
+    refreshRequest() {
+      this.requestForm.name = ''
+      this.requestForm.platformName = null
+      this.$refs.requestFormRef.resetFields()
+      this.queryCapabilitiesList()
+    },
     // 添加映射
     addMapping() {
       this.title = '新增映射'

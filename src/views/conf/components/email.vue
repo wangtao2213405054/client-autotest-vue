@@ -47,10 +47,10 @@
         <el-input v-model="emailForm.title" style="width: 350px" placeholder="请输入邮件标题" clearable />
       </el-form-item>
       <el-form-item label="发送人" style="width: 50%" prop="sender">
-        <el-input v-model="emailForm.sender" style="width: 350px" placeholder="请输入发送人" clearable />
+        <el-input v-model="emailForm.sender" style="width: 350px" autocomplete="new-password" placeholder="请输入发送人" clearable />
       </el-form-item>
       <el-form-item label="授权码" prop="password">
-        <el-input v-model="emailForm.password" style="width: 350px" placeholder="请输入邮箱授权码" show-password clearable />
+        <el-input v-model="emailForm.password" autocomplete="new-password" style="width: 350px" placeholder="请输入邮箱授权码" show-password clearable />
       </el-form-item>
       <el-form-item label="接收人" prop="receivers">
         <el-select

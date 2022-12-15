@@ -287,7 +287,19 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
       </span>
     </el-dialog>
-    <el-form style="text-align: right">
+    <el-form ref="requestFormRef" :model="requestForm" inline>
+      <el-form-item>
+        <el-input v-model="requestForm.name" placeholder="输入事件名称查询" clearable />
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="requestForm.mapping" placeholder="输入事件映射查询" clearable />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" @click="queryEventList">查询</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button icon="el-icon-refresh" @click="refreshRequest">重置</el-button>
+      </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-plus" type="success" @click="openDialog">添 加</el-button>
       </el-form-item>
@@ -359,7 +371,9 @@ export default {
         size: 20,
         total: null,
         projectId: localStorage.getItem('projectId'),
-        platform: localStorage.getItem('mold')
+        platform: localStorage.getItem('mold'),
+        name: null,
+        mapping: null
       },
       platformList: [
         { label: 'all', title: '所有项目', desc: '此事件可在所有项目中使用' },
@@ -373,6 +387,18 @@ export default {
     this.getEventList()
   },
   methods: {
+    // 条件查询
+    queryEventList() {
+      this.requestForm.page = 1
+      this.getEventList()
+    },
+    // 重置请求信息
+    refreshRequest() {
+      this.requestForm.name = ''
+      this.requestForm.mapping = ''
+      this.$refs.requestFormRef.resetFields()
+      this.getEventList()
+    },
     clickFunc(funcType) {
       this.addForm.func.push({
         type: funcType,

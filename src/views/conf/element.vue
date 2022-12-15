@@ -50,7 +50,19 @@
         <el-button type="primary" @click="editElementInfo">确 定</el-button>
       </span>
     </el-dialog>
-    <el-form style="text-align: right">
+    <el-form ref="requestFormRef" :model="requestForm" inline>
+      <el-form-item>
+        <el-input v-model="requestForm.name" placeholder="输入元素名称查询" clearable />
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="requestForm.label" placeholder="输入元素内容查询" clearable />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" @click="queryElementList">查询</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button icon="el-icon-refresh" @click="refreshRequest">重置</el-button>
+      </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-plus" type="success" @click="openDialog">添 加</el-button>
       </el-form-item>
@@ -124,7 +136,9 @@ export default {
         page: 1,
         size: 20,
         total: null,
-        platform: localStorage.getItem('mold')
+        platform: localStorage.getItem('mold'),
+        name: null,
+        label: null
       }
     }
   },
@@ -132,6 +146,18 @@ export default {
     this.getElementList()
   },
   methods: {
+    // 条件查询
+    queryElementList() {
+      this.requestForm.page = 1
+      this.getElementList()
+    },
+    // 重置请求信息
+    refreshRequest() {
+      this.requestForm.name = ''
+      this.requestForm.label = ''
+      this.$refs.requestFormRef.resetFields()
+      this.getElementList()
+    },
     editElementInfo() {
       this.$refs.addFormRef.validate(async(valid) => {
         if (valid) {
