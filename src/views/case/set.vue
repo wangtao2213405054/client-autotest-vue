@@ -213,7 +213,7 @@ export default {
       this.addForm.projectId = projectId
       this.dialogVisible = true
     },
-    // 删除版本
+    // 删除集合
     async deleteSetInfo(id) {
       const clickConfirmResult = await this.$confirm('此操作将永久删除该集合, 是否继续?', '提示', {
         confirmButtonText: '确定',
