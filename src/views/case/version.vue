@@ -173,7 +173,7 @@ export default {
     // 获取版本列表
     async getVersionList() {
       const { items, total } = await getVersionList(this.requestForm)
-      const effectList = ['success', 'info', 'warning', 'danger']
+      const effectList = ['success', 'info', 'warning', 'danger', null]
       items.forEach(item => {
         item.effect = effectList[Math.floor(Math.random() * effectList.length)]
       })
