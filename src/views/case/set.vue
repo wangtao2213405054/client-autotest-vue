@@ -158,7 +158,7 @@ export default {
       this.requestForm.name = ''
       this.requestForm.special = null
       this.$refs.requestFormRef.resetFields()
-      this.queryDeviceList()
+      this.querySetList()
     },
     // 添加版本信息
     addSet() {

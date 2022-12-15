@@ -140,7 +140,7 @@ export default {
     refreshRequest() {
       this.requestForm.name = ''
       this.$refs.requestFormRef.resetFields()
-      this.queryDeviceList()
+      this.queryVersionList()
     },
     // 添加版本信息
     addVersion() {
