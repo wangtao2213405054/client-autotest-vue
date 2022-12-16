@@ -46,21 +46,26 @@
           :indent="12"
           :load="loadNode"
           lazy
+          :expand-on-click-node="false"
           :filter-node-method="filterNode"
           @node-click="queryModuleApi"
         >
           <span slot-scope="{ node, data }" class="custom-tree-node" @mouseenter="mouseenter(data)" @mouseleave="mouseleave(data)">
             <span>
               <svg-icon
-                v-if="data['identifier'] === 'folder'"
                 :icon-class="node.expanded ? 'coke-icon-folder-open' : 'coke-icon-folder'"
                 class="icon-class"
               />
-              <svg-icon v-else icon-class="coke-icon-case" style="font-size: 20px" class="icon-class" />
               <span style="color: #606266">{{ data.name }}</span>
             </span>
             <span v-show="data['show']">
-              <el-tooltip v-if="data['identifier'] === 'folder'" content="添加接口" :open-delay="200" :enterable="false" placement="top-start">
+              <el-tooltip
+                v-if="node.level < 2"
+                content="添加子分组"
+                :open-delay="200"
+                :enterable="false"
+                placement="top-start"
+              >
                 <el-button
                   type="text"
                   size="mini"
@@ -95,12 +100,9 @@
     </el-col>
     <el-col style="border-style: solid; border-color: #DCDFE6; border-width: 1px; background-color: #FFFFFF" :span="17" :xs="24">
       <el-scrollbar class="api-content">
-        <div v-if="queryId">
-          <edit style="padding: 10px" :module-id="queryId" />
+        <div>
+          <caseList style="padding: 10px" :module-id="queryId" />
           <div style="height: 20px" />
-        </div>
-        <div v-else>
-          请选择一个接口进行编辑吧~
         </div>
       </el-scrollbar>
     </el-col>
@@ -109,11 +111,11 @@
 
 <script>
 import { deleteModulesInfo, editModulesInfo, getModulesList } from '@/api/business/folder'
-import edit from '@/views/case/components/edit'
+import caseList from '@/views/case/client/index'
 
 export default {
   components: {
-    edit
+    caseList
   },
   data() {
     return {
@@ -222,8 +224,8 @@ export default {
     },
     // 绑定模块id
     queryModuleApi(data) {
-      if (data['identifier'] === 'folder') return
       this.queryId = data['id']
+      console.log(data)
     },
     // 鼠标悬浮在 tree 节点时的钩子
     mouseenter(data) {
