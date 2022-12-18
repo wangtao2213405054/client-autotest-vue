@@ -31,9 +31,9 @@
           >
             <el-option
               v-for="item in platformList"
-              :key="item.key"
-              :label="item.label"
-              :value="item.key"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             />
           </el-select>
         </el-form-item>
@@ -251,9 +251,9 @@
         >
           <el-option
             v-for="item in platformList"
-            :key="item.key"
-            :label="item.label"
-            :value="item.key"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
           />
         </el-select>
       </el-form-item>
@@ -274,9 +274,9 @@
         <template slot-scope="scope">
           <div
             v-for="item in platformList"
-            :key="item.key"
+            :key="item.id"
           >
-            <span v-if="item.key === scope.row.platformName">{{ item.label }}</span>
+            <span v-if="item.id === scope.row.platformName">{{ item.name }}</span>
           </div>
         </template>
       </el-table-column>
@@ -313,6 +313,7 @@
 
 <script>
 import dataType from '@/views/case/common/dataType'
+import { platform } from '@/utils/localType'
 import { editCapabilitiesInfo, getCapabilitiesList, deleteCapabilitiesInfo } from '@/api/devices/capabilities'
 export default {
   name: 'Capabilities',
@@ -334,11 +335,7 @@ export default {
         name: null
       },
       capabilitiesList: [],
-      platformList: [
-        { key: 'android', label: 'Android' },
-        { key: 'ios', label: 'iOS' },
-        { key: 'web', label: 'Web' }
-      ]
+      platformList: platform
     }
   },
   created() {

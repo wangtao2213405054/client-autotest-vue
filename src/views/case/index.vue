@@ -135,7 +135,8 @@ export default {
       title: '',
       labelName: '',
       modulesList: [],
-      queryId: null
+      queryId: null,
+      treeClickCount: 0
     }
   },
   watch: {
@@ -194,7 +195,12 @@ export default {
             if (this.addForm.nodeId) {
               this.refreshNodeBy(this.addForm.nodeId)
             } else {
-              this.$refs.tree.insertAfter(data, this.modulesList[this.modulesList.length - 1])
+              const insertData = this.modulesList[this.modulesList.length - 1]
+              if (insertData) {
+                this.$refs.tree.insertAfter(data, insertData)
+              } else {
+                this.modulesList.push(data)
+              }
             }
           }
           this.dialogVisible = false
@@ -223,9 +229,20 @@ export default {
       }
     },
     // 绑定模块id
-    queryModuleApi(data) {
-      this.queryId = data['id']
-      console.log(data)
+    queryModuleApi(data, node) {
+      this.treeClickCount++
+      window.setTimeout(() => {
+        if (this.treeClickCount === 1 || node.level > 1) {
+          this.treeClickCount = 0
+          this.queryId = [node.level === 1 ? 0 : node.parent.data.id, data.id]
+        }
+        // 双击事件
+        if (this.treeClickCount > 1 && node.level === 1 && !node.isLeaf) {
+          this.treeClickCount = 0
+          // 展开或收起树节点
+          node.expanded ? node.collapse() : node.expand()
+        }
+      }, 200)
     },
     // 鼠标悬浮在 tree 节点时的钩子
     mouseenter(data) {
@@ -280,7 +297,11 @@ export default {
   background-color: #FFFFFF;
 }
 .folderTree {
-  background-color: rgba(248,248,248,0.6)
+  background-color: rgba(248,248,248,0.6);
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
 }
 //::v-deep .folderTree .el-tree-node__content{
 //  &:hover{

@@ -4,7 +4,27 @@
       <el-tab-pane label="用例列表" name="first">
         <el-form ref="requestFormRef" :model="requestForm" inline>
           <el-form-item>
-            <el-input v-model="requestForm.name" placeholder="输入设备名称查询" clearable />
+            <el-input v-model="requestForm.name" placeholder="输入用例名称查询" clearable />
+          </el-form-item>
+          <el-form-item>
+            <el-select v-model="requestForm.special" placeholder="选择类型进行查询" clearable>
+              <el-option
+                v-for="item in specialList"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-select v-model="requestForm.action" placeholder="选择状态进行查询" clearable>
+              <el-option
+                v-for="item in actionList"
+                :key="item.key"
+                :label="item.label"
+                :value="item.key"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="queryCaseList">查询</el-button>
@@ -13,9 +33,86 @@
             <el-button icon="el-icon-refresh" @click="refreshRequest">重置</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button icon="el-icon-plus" type="success" @click="addTab('新增用例')">添 加</el-button>
+            <el-button icon="el-icon-plus" type="success" @click="addTab(0, '新增用例')">添 加</el-button>
           </el-form-item>
         </el-form>
+        <el-table header-row-class-name="table-header-style" :data="caseList" stripe style="width: 100%">
+          <el-table-column type="index" label="编号" width="60" align="center" />
+          <el-table-column prop="name" label="用例名称" show-overflow-tooltip />
+          <el-table-column prop="desc" label="用例描述" show-overflow-tooltip />
+          <el-table-column label="优先级" width="80px" align="center">
+            <template slot-scope="scope">
+              <div
+                v-for="item in priorityList"
+                :key="item.id"
+              >
+                <span v-if="scope.row.priority === item.id">
+                  {{ item.name }}
+                </span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="用例类型" width="80px" align="center">
+            <template slot-scope="scope">
+              <div
+                v-for="item in specialList"
+                :key="item.key"
+              >
+                <el-tag
+                  v-if="scope.row.special === item.key"
+                  :type="item.type"
+                  disable-transitions
+                >
+                  {{ item.label }}
+                </el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="用例状态" width="80px" align="center">
+            <template slot-scope="scope">
+              <div
+                v-for="item in actionList"
+                :key="item.key"
+              >
+                <el-tag
+                  v-if="scope.row.action === item.key"
+                  :type="item.type"
+                  disable-transitions
+                  effect="dark"
+                >
+                  {{ item.label }}
+                </el-tag>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="updateName" label="更新人" width="100px" align="center" />
+          <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
+          <el-table-column label="操作" width="120px" align="center">
+            <template slot-scope="scope">
+              <el-button
+                icon="el-icon-edit"
+                size="mini"
+                type="text"
+                @click.stop="addTab(scope.row.id, scope.row.name, scope.row)"
+              >编辑</el-button>
+              <el-button
+                class="delete-button"
+                icon="el-icon-delete"
+                size="mini"
+                type="text"
+                @click.stop="deleteCaseInfo(scope.row.id)"
+              >删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          style="text-align: right; margin-top: 15px"
+          background
+          :page-size="requestForm.pageSize"
+          layout="total, prev, pager, next"
+          :total="requestForm.total"
+          @current-change="handleCurrentChange"
+        />
       </el-tab-pane>
       <el-tab-pane
         v-for="item in editableTabs"
@@ -24,21 +121,24 @@
         :name="item.name"
         closable
       >
-        <case-edit />
+        <case-edit :module-id="moduleId" :update-form="item.content" @save="saveEvent" @delete="deleteCaseInfo" />
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 <script>
 import caseEdit from '@/views/case/client/edit'
+import { deleteCaseInfo, getCaseList } from '@/api/business/case'
+import { priority, actions, specials } from '@/utils/localType'
+const projectId = JSON.parse(localStorage.getItem('projectId'))
 export default {
   components: {
     caseEdit
   },
   props: {
     moduleId: {
-      type: Number,
-      default: () => null
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -49,25 +149,49 @@ export default {
       requestForm: {
         name: null,
         page: 1,
-        pageSize: 20
-      }
+        pageSize: 20,
+        projectId: projectId,
+        folderId: this.moduleId,
+        special: null,
+        action: null
+      },
+      caseList: [],
+      specialList: specials,
+      actionList: actions,
+      priorityList: priority,
+      caseInfo: {}
     }
   },
+  watch: {
+    // 当左侧树发生变化时触发的钩子
+    moduleId(newData, oldData) {
+      if (!oldData || newData.toString() === oldData.toString()) return
+      this.requestForm.folderId = newData
+      this.editableTabsValue = 'first'
+      this.queryCaseList()
+    }
+  },
+  created() {
+    this.getCaseList()
+  },
   methods: {
-    addTab(targetName) {
+    // 添加标签页触发的钩子
+    addTab(targetName, title, caseInfo = null) {
+      const tabsValue = String(targetName)
       for (let i = 0; i < this.editableTabs.length; i++) {
-        if (targetName === this.editableTabs[i].name) {
-          this.editableTabsValue = targetName
+        if (tabsValue === this.editableTabs[i].name) {
+          this.editableTabsValue = tabsValue
           return
         }
       }
       this.editableTabs.push({
-        title: targetName,
-        name: targetName,
-        content: 'New Tab content'
+        title: title,
+        name: tabsValue,
+        content: JSON.parse(JSON.stringify(caseInfo))
       })
-      this.editableTabsValue = targetName
+      this.editableTabsValue = tabsValue
     },
+    // 删除标签页时触发的钩子
     removeTab(targetName) {
       const tabs = this.editableTabs
       let activeName = this.editableTabsValue
@@ -86,11 +210,66 @@ export default {
 
       this.editableTabsValue = activeName
       this.editableTabs = tabs.filter(tab => tab.name !== targetName)
+    },
+    // 查询用例列表
+    queryCaseList() {
+      this.requestForm.page = 1
+      this.getCaseList()
+    },
+    refreshRequest() {
+      this.requestForm.name = null
+      this.requestForm.action = null
+      this.requestForm.special = null
+      this.$refs.requestFormRef.resetFields()
+      this.getCaseList()
+    },
+    // 获取用例列表列表
+    async getCaseList() {
+      const { items, total } = await getCaseList(this.requestForm)
+      this.caseList = items
+      this.requestForm.total = total
+    },
+    // 页码改变
+    handleCurrentChange(newPage) {
+      this.requestForm.page = newPage
+      this.getCaseList()
+      // 返回顶部
+      window.scrollTo({
+        left: 0,
+        top: 0,
+        behavior: 'smooth'
+      })
+    },
+    // 点击保存时的钩子
+    saveEvent(value, model) {
+      this.editableTabs.forEach(item => {
+        if (item.name === model ? String(value.id) : '0') {
+          item.title = value.name
+        }
+      })
+      this.getCaseList()
+    },
+    // 删除测试用例
+    async deleteCaseInfo(id) {
+      const clickConfirmResult = await this.$confirm('此操作将永久删除该用例, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (clickConfirmResult !== 'confirm') {
+        return this.$message.info('取消删除')
+      }
+      this.removeTab(String(id))
+      await deleteCaseInfo({ id })
+      await this.getCaseList()
     }
   }
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+::v-deep .table-header-style th {
+  background-color: #E4E7ED;
+  color: #303133;
+}
 </style>

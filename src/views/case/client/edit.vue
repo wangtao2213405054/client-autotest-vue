@@ -28,8 +28,8 @@
           </el-col>
           <el-col :span="6">
             <div style="text-align: center">
-              <el-button type="primary" @click="saveApi">保存</el-button>
-              <el-button type="danger">删除</el-button>
+              <el-button type="primary" @click="submitForm">保存</el-button>
+              <el-button type="danger" @click="deleteCaseInfo">删除</el-button>
             </div>
           </el-col>
         </el-row>
@@ -48,7 +48,13 @@
                 <i class="el-icon-info" />
               </el-tooltip>
             </span>
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-cascader
+              v-model="addForm.prePosition"
+              :props="loadSpecialCase"
+              clearable
+              style="width: 100%"
+              :show-all-levels="false"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -64,7 +70,13 @@
                 <i class="el-icon-info" />
               </el-tooltip>
             </span>
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-cascader
+              v-model="addForm.postPosition"
+              :props="loadSpecialCase"
+              clearable
+              style="width: 100%"
+              :show-all-levels="false"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -80,14 +92,31 @@
                 <i class="el-icon-info" />
               </el-tooltip>
             </span>
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-select
+              v-model="addForm.priority"
+              placeholder="请选择优先级"
+              style="width: 100%"
+              clearable
+            >
+              <el-option
+                v-for="item in priorityList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
           <el-form-item label="所属模块">
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-cascader
+              v-model="addForm.moduleList"
+              :props="loadModule"
+              clearable
+              style="width: 100%"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -103,7 +132,20 @@
                 <i class="el-icon-info" />
               </el-tooltip>
             </span>
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-select
+              v-model="addForm.startVersion"
+              placeholder="请选择开始版本"
+              style="width: 100%"
+              clearable
+              @visible-change="getVersionList"
+            >
+              <el-option
+                v-for="item in versionList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -119,7 +161,20 @@
                 <i class="el-icon-info" />
               </el-tooltip>
             </span>
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-select
+              v-model="addForm.endVersion"
+              placeholder="请选择结束版本"
+              style="width: 100%"
+              clearable
+              @visible-change="getVersionList"
+            >
+              <el-option
+                v-for="item in versionList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -137,7 +192,22 @@
                 <i class="el-icon-info" />
               </el-tooltip>
             </span>
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-select
+              v-model="addForm.setInfo"
+              placeholder="请选择所属集合"
+              style="width: 100%"
+              multiple
+              collapse-tags
+              clearable
+              @visible-change="getSetList"
+            >
+              <el-option
+                v-for="item in setList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -153,7 +223,20 @@
                 <i class="el-icon-info" />
               </el-tooltip>
             </span>
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-select
+              v-model="addForm.platform"
+              placeholder="请选择所属平台"
+              style="width: 100%"
+              multiple
+              collapse-tags
+            >
+              <el-option
+                v-for="item in platformList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -169,7 +252,24 @@
                 <i class="el-icon-info" />
               </el-tooltip>
             </span>
-            <el-input v-model="addForm.name" placeholder="请输入接口名称" clearable />
+            <el-select
+              v-model="addForm.officerList"
+              style="width: 100%"
+              multiple
+              placeholder="请输入责任人"
+              filterable
+              remote
+              clearable
+              :loading="selectLoading"
+              :remote-method="loadingOfficer"
+            >
+              <el-option
+                v-for="item in userList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -187,8 +287,13 @@
               </el-tooltip>
             </span>
             <el-radio-group v-model="addForm.action" style="margin-left: 20px">
-              <el-radio :label="true">正常</el-radio>
-              <el-radio :label="false">废弃</el-radio>
+              <el-radio
+                v-for="item in actionList"
+                :key="item.key"
+                :label="item.key"
+              >
+                {{ item.label }}
+              </el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -205,18 +310,23 @@
               </el-tooltip>
             </span>
             <el-radio-group v-model="addForm.special" style="margin-left: 20px">
-              <el-radio :label="false">普通用例</el-radio>
-              <el-radio :label="true">特殊用例</el-radio>
+              <el-radio
+                v-for="item in specialList"
+                :key="item.key"
+                :label="item.key"
+              >
+                {{ item.label }}
+              </el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="用例说明">
         <el-input
-          v-model="addForm.background"
+          v-model="addForm.desc"
           type="textarea"
           :rows="4"
-          placeholder="请输入接口说明"
+          placeholder="请输入用例步骤说明"
         />
       </el-form-item>
     </el-form>
@@ -224,22 +334,179 @@
 </template>
 
 <script>
+import { getVersionList } from '@/api/business/version'
+import { getSetList } from '@/api/business/set'
+import { platform, priority, specials, actions } from '@/utils/localType'
+import { getManagementList } from '@/api/account/management'
+import { getModulesList } from '@/api/business/folder'
+import { editCaseInfo, getCaseList } from '@/api/business/case'
+const projectId = JSON.parse(localStorage.getItem('projectId'))
+const mold = localStorage.getItem('mold')
 export default {
+  props: {
+    moduleId: {
+      type: Array,
+      default: () => []
+    },
+    updateForm: {
+      type: Object,
+      default: () => null
+    }
+  },
   data() {
     return {
       caseTips: JSON.parse(localStorage.getItem('caseTips')),
       addForm: {
-        name: null,
-        special: false,
-        action: true
+        name: null, // 用例名称
+        prePosition: null, // 前置条件
+        postPosition: null, // 后置条件
+        desc: null, // 用例备注
+        special: false, // 特殊标记
+        action: true, // 用例状态
+        startVersion: null, // 开始版本
+        endVersion: null, // 结束版本
+        setInfo: [], // 所属集合
+        platform: [], // 所属平台
+        priority: null, // 优先级
+        officerList: [], // 责任人
+        moduleList: this.moduleId, // 所属模块
+        caseSteps: [], // 用例步骤
+        projectId: projectId
+      },
+      specialList: specials,
+      actionList: actions,
+      setList: [],
+      versionList: [],
+      moduleList: [],
+      platformList: [],
+      priorityList: priority,
+      selectLoading: false,
+      userList: [],
+      loadModule: {
+        lazy: true,
+        async lazyLoad(node, resolve) {
+          const { level } = node
+          const items = await getModulesList({ projectId, id: node.data ? node.data.id : level })
+          if (level === 0) {
+            items.forEach(item => {
+              item.disabled = item.leaf
+            })
+          }
+          resolve(items)
+        },
+        value: 'id',
+        label: 'name'
+      },
+      // 加载特殊用例
+      loadSpecialCase: {
+        lazy: true,
+        async lazyLoad(node, resolve) {
+          const { level } = node
+          if (level <= 1) {
+            const items = await getModulesList({ projectId, id: node.data ? node.data.id : level })
+            items.forEach(item => {
+              item.disabled = level === 0 ? item.leaf : item.exist
+              item.leaf = level === 0 ? item.leaf : item.exist
+            })
+            resolve(items)
+          } else {
+            const request = {
+              page: 1,
+              pageSize: 9999,
+              special: true,
+              projectId,
+              folderId: [1, node.data.id]
+            }
+            const { items } = await getCaseList(request)
+            items.forEach(item => {
+              item.leaf = true
+            })
+            resolve(items)
+          }
+        },
+        value: 'id',
+        label: 'name'
       }
     }
+  },
+  created() {
+    if (this.updateForm) {
+      this.addForm = this.updateForm
+    }
+    this.filterPlatform()
+    this.getVersionList()
+    this.getSetList()
   },
   methods: {
     // 设置不再弹出提示
     setPopover() {
       localStorage.setItem('caseTips', 'true')
       this.caseTips = true
+    },
+    // 获取版本列表
+    async getVersionList(bool = true) {
+      if (bool) {
+        const { items } = await getVersionList({ page: 1, pageSize: 9999, projectId })
+        this.versionList = items
+      }
+    },
+    // 获取集合列表
+    async getSetList(bool = true) {
+      if (bool) {
+        const { items } = await getSetList({ page: 1, pageSize: 9999, projectId, special: false })
+        this.setList = items
+      }
+    },
+    // 根据项目过滤所属平台
+    filterPlatform() {
+      // 根据项目过滤
+      this.platformList = platform.filter(item => {
+        return mold === item.mold
+      })
+      // 如果只有一个平台则默认选中
+      if (this.platformList.length === 1 && !this.updateForm) {
+        this.addForm.platform.push(this.platformList[0].id)
+      }
+    },
+    // 责任人加载器
+    async loadingOfficer(query) {
+      if (query !== '') {
+        this.loading = true
+        const requestForm = {
+          page: 1,
+          pageSize: 20,
+          name: query
+        }
+        try {
+          const { items } = await getManagementList(requestForm)
+          this.userList = items
+        } finally {
+          this.loading = false
+        }
+      } else {
+        this.userList = []
+      }
+    },
+    // 提交表单
+    submitForm() {
+      this.$refs.addFormRef.validate(async(valid) => {
+        if (valid) {
+          const caseInfo = await editCaseInfo(this.addForm)
+          this.$message.success('保存成功')
+          this.$emit('save', caseInfo, !!this.addForm.id)
+          this.addForm = caseInfo
+        } else {
+          this.$message.error('请检查信息是否完善')
+        }
+      })
+    },
+    // 删除用例
+    deleteCaseInfo() {
+      if (this.addForm.id) {
+        this.$emit('delete', this.addForm.id)
+      } else {
+        this.$message.warning('未保存的用例无法删除哟~')
+      }
     }
   }
 }

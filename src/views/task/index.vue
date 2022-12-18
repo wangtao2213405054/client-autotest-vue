@@ -27,7 +27,7 @@
           <el-select
             v-model="addForm.platform"
             placeholder="请选择任务的所属平台"
-            clearable
+            :clearable="platformList.length === 1"
             style="width: 100%"
             @change="platformChange"
           >
@@ -102,6 +102,7 @@
 import { getMasterList } from '@/api/devices/master'
 import { getWorkerList } from '@/api/devices/worker'
 import { getTaskList, newTaskInfo } from '@/api/task/center'
+import { platform } from '@/utils/localType'
 let platformSelect = ''
 const projectId = JSON.parse(localStorage.getItem('projectId'))
 const mold = localStorage.getItem('mold')
@@ -189,11 +190,6 @@ export default {
     },
     // 根据项目过滤所属平台
     filterPlatform() {
-      const platform = [
-        { id: 'web', mold: 'selenium', name: 'Web' },
-        { id: 'android', mold: 'appium', name: 'Android' },
-        { id: 'ios', mold: 'appium', name: 'iOS' }
-      ]
       // 根据项目过滤
       this.platformList = platform.filter(item => {
         return mold === item.mold
