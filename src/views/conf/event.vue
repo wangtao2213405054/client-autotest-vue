@@ -43,6 +43,18 @@
           />
         </el-form-item>
         <el-form-item
+          label="事件类型"
+          prop="subset"
+          :rules="[
+            { required: true, message: '请选择此事件的事件类型', trigger: 'blur' }
+          ]"
+        >
+          <el-radio-group v-model="addForm.subset">
+            <el-radio-button :label="false">普通事件</el-radio-button>
+            <el-radio-button :label="true">允许添加子节点</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
           label="事件归属"
           prop="platform"
           :rules="[
@@ -353,6 +365,7 @@ export default {
         mapping: null,
         desc: null,
         platform: null,
+        subset: false,
         func: [],
         projectId: localStorage.getItem('projectId')
       },
@@ -472,6 +485,7 @@ export default {
         desc: null,
         platform: null,
         func: [],
+        subset: false,
         projectId: localStorage.getItem('projectId')
       }
       this.$refs.addFormRef.clearValidate()
