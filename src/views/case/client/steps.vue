@@ -1,12 +1,15 @@
 <template>
   <div>
+    <el-empty v-if="!caseSteps.length" description="暂无步骤, 快来添加一个吧" />
     <el-tree
+      v-else
       ref="tree"
       :data="caseSteps"
       node-key="key"
       default-expand-all
       draggable
       :expand-on-click-node="false"
+      :allow-drop="allowDrop"
     >
       <div slot-scope="{ node, data }">
         <el-form
@@ -21,61 +24,88 @@
           <el-form-item
             :label="data.name"
           />
-          <el-form-item
-            v-for="(item, index) in data.func"
-            :key="item.key"
-            style="width: 180px"
-            :prop="'func.' + index + '.default'"
-            :rules="[
-              { required: true, message: item.placeholder, trigger: 'blur' },
-            ]"
-          >
-            <el-tooltip effect="dark" :open-delay="1000" :content="item.placeholder" placement="top">
-              <el-input
-                v-if="item.type.indexOf('input') !== -1"
-                v-model="item.default"
-                :placeholder="item.placeholder"
-                clearable
-              />
-              <el-select
-                v-if="item.type.indexOf('select') !== -1 && item.selectModel === 'Custom'"
-                v-model="item.default"
-                :placeholder="item.placeholder"
-                clearable
-              >
-                <el-option
-                  v-for="items in item.source"
-                  :key="items.key"
-                  :label="items.label"
-                  :value="items.param"
-                />
-              </el-select>
-              <el-select
-                v-if="item.type.indexOf('select') !== -1 && item.selectModel !== 'Custom'"
-                v-model="item.default"
-                :placeholder="item.placeholder"
-                clearable
-                @visible-change="getInlaySelectInfo(item.selectModel, item, $event)"
-              >
-                <el-option
-                  v-for="items in item.source"
-                  :key="items.id"
-                  :label="items.name"
-                  :value="items.id"
-                />
-              </el-select>
-            </el-tooltip>
+          <el-form-item v-if="!data.func.length">
+            <el-input v-model="data.name" readonly />
           </el-form-item>
-          <el-form-item style="padding-right: 8px; text-align: right">
-            <el-button
-              class="delete-button"
-              type="text"
-              size="mini"
-              @click="() => remove(node, data)"
+          <span v-else>
+            <el-form-item
+              v-for="(item, index) in data.func"
+              :key="item.key"
+              style="width: 180px"
+              :prop="'func.' + index + '.default'"
+              :rules="[
+                { required: true, message: item.placeholder, trigger: 'blur' },
+              ]"
             >
-              删除
-            </el-button>
-          </el-form-item>
+              <el-tooltip effect="dark" :open-delay="1000" :content="item.placeholder" placement="top">
+                <el-input
+                  v-if="item.type.indexOf('input') !== -1"
+                  v-model="item.default"
+                  :placeholder="item.placeholder"
+                  clearable
+                />
+                <el-select
+                  v-if="item.type.indexOf('select') !== -1 && item.selectModel === 'Custom'"
+                  v-model="item.default"
+                  :placeholder="item.placeholder"
+                  clearable
+                >
+                  <el-option
+                    v-for="items in item.source"
+                    :key="items.key"
+                    :label="items.label"
+                    :value="items.param"
+                  />
+                </el-select>
+                <el-select
+                  v-if="item.type.indexOf('select') !== -1 && item.selectModel !== 'Custom'"
+                  v-model="item.default"
+                  :placeholder="item.placeholder"
+                  clearable
+                  @visible-change="getInlaySelectInfo(item.selectModel, item, $event)"
+                >
+                  <el-option
+                    v-for="items in item.source"
+                    :key="items.id"
+                    :label="items.name"
+                    :value="items.id"
+                  />
+                </el-select>
+              </el-tooltip>
+            </el-form-item>
+          </span>
+          <span style="padding-right: 8px; position: fixed; right: 0">
+            <el-form-item>
+              <el-dropdown v-if="data.subset" trigger="click" style="margin-right: 5px">
+                <el-button
+                  type="text"
+                  size="mini"
+                >
+                  添加子节点
+                </el-button>
+                <el-dropdown-menu slot="dropdown" class="cont">
+                  <el-dropdown-item
+                    v-for="item in eventList"
+                    :key="item.id"
+                    divided
+                    @click.native="() => addNode(node, data, item)"
+                  >
+                    <el-tooltip effect="dark" :content="item.desc" placement="right">
+                      <span> {{ item.name }} </span>
+                    </el-tooltip>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+              <el-button
+                class="delete-button"
+                type="text"
+                size="mini"
+                @click="() => remove(node, data)"
+              >
+                删除
+              </el-button>
+            </el-form-item>
+          </span>
         </el-form>
       </div>
     </el-tree>
@@ -98,7 +128,6 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <el-button @click="validate">test</el-button>
   </div>
 </template>
 
@@ -166,9 +195,24 @@ export default {
     },
     // 触发表单校验规则
     validate() {
+      let flag = null
       this.$refs.treeStepsFormRef.validate((valid) => {
-        return valid
+        flag = !!valid
       })
+      return flag
+    },
+    // 判断是否可以放置在此位置
+    allowDrop(draggingNode, dropNode, type) {
+      // 如果 subset 不为真则不可将节点拖拽成为其子节点
+      return !(type === 'inner' && !dropNode.data.subset)
+    },
+    // 添加子节点
+    addNode(node, data, value) {
+      if (!data.children) {
+        this.$set(data, 'children', [])
+      }
+      value.key = Date.now() + Math.random()
+      data.children.push(JSON.parse(JSON.stringify(value)))
     }
   }
 }
@@ -197,7 +241,7 @@ export default {
 .stepContext {
   //word-break: break-word;
   width: 100%;
-  word-break: normal;
+  white-space: pre-wrap;
 }
 .el-form-item.el-form-item {
   margin-bottom: 5px;

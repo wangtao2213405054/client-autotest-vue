@@ -525,6 +525,9 @@ export default {
     submitForm() {
       this.$refs.addFormRef.validate(async(valid) => {
         if (valid) {
+          if (!this.addForm.caseSteps.length) {
+            return this.$message.error('用例步骤不能为空')
+          }
           const flag = this.$refs.steps.validate()
           if (flag) {
             const caseInfo = await editCaseInfo(this.addForm)

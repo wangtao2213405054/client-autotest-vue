@@ -36,7 +36,8 @@
             <el-button icon="el-icon-plus" type="success" @click="addTab(0, '新增用例')">添 加</el-button>
           </el-form-item>
         </el-form>
-        <el-table header-row-class-name="table-header-style" :data="caseList" stripe style="width: 100%">
+        <el-empty v-if="!caseList.length" description="暂无用例, 快来添加一个吧" />
+        <el-table v-else header-row-class-name="table-header-style" :data="caseList" stripe style="width: 100%">
           <el-table-column type="index" label="编号" width="60" align="center" />
           <el-table-column prop="name" label="用例名称" show-overflow-tooltip />
           <el-table-column prop="desc" label="用例描述" show-overflow-tooltip />
@@ -106,6 +107,7 @@
           </el-table-column>
         </el-table>
         <el-pagination
+          v-if="caseList.length"
           style="text-align: right; margin-top: 15px"
           background
           :page-size="requestForm.pageSize"
