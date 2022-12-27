@@ -435,21 +435,21 @@ export default {
       loadSpecialCase: {
         lazy: true,
         async lazyLoad(node, resolve) {
-          const { level } = node
+          const { level, data } = node
           if (level <= 1) {
-            const items = await getModulesList({ projectId, id: node.data ? node.data.id : level })
-            items.forEach(item => {
+            const module = await getModulesList({ projectId, id: data ? data.id : level })
+            module.forEach(item => {
               item.disabled = level === 0 ? item.leaf : item.exist
               item.leaf = level === 0 ? item.leaf : item.exist
             })
-            resolve(items)
+            resolve(module)
           } else {
             const request = {
               page: 1,
               pageSize: 9999,
               special: true,
               projectId,
-              folderId: [1, node.data.id]
+              folderId: [1, data.id]
             }
             const { items } = await getCaseList(request)
             items.forEach(item => {
