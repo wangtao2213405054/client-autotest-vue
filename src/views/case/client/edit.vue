@@ -1,7 +1,12 @@
 <template>
   <div>
-    <el-form ref="addFormRef" :model="addForm">
-      <el-form-item>
+    <el-form ref="addFormRef" :model="addForm" :show-message="false">
+      <el-form-item
+        prop="name"
+        :rules="[
+          { required: true, message: '请填写用例名称', trigger: 'blur' },
+        ]"
+      >
         <el-row :gutter="20">
           <el-col :span="18">
             <el-popover
@@ -80,7 +85,13 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="优先级">
+          <el-form-item
+            label="优先级"
+            prop="priority"
+            :rules="[
+              { required: true, message: '请选择优先级', trigger: 'blur' },
+            ]"
+          >
             <span slot="label">
               优先级
               <el-tooltip
@@ -110,7 +121,13 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-form-item label="所属模块">
+          <el-form-item
+            label="所属模块"
+            prop="moduleList"
+            :rules="[
+              { required: true, message: '请选择所属模块', trigger: 'blur' },
+            ]"
+          >
             <el-cascader
               v-model="addForm.moduleList"
               :props="loadModule"
@@ -180,7 +197,13 @@
       </el-row>
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-form-item label="所属类型">
+          <el-form-item
+            label="所属集合"
+            prop="setInfo"
+            :rules="[
+              { required: true, message: '请选择所属集合', trigger: 'blur' },
+            ]"
+          >
             <span slot="label">
               所属集合
               <el-tooltip
@@ -211,7 +234,13 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="所属平台">
+          <el-form-item
+            label="所属平台"
+            prop="platform"
+            :rules="[
+              { required: true, message: '请选择所属平台', trigger: 'blur' },
+            ]"
+          >
             <span slot="label">
               所属平台
               <el-tooltip
@@ -330,6 +359,7 @@
         />
       </el-form-item>
     </el-form>
+    <steps ref="steps" :steps="addForm.caseSteps" />
   </div>
 </template>
 
@@ -340,9 +370,13 @@ import { platform, priority, specials, actions } from '@/utils/localType'
 import { getManagementList } from '@/api/account/management'
 import { getModulesList } from '@/api/business/folder'
 import { editCaseInfo, getCaseList } from '@/api/business/case'
+import steps from '@/views/case/client/steps'
 const projectId = JSON.parse(localStorage.getItem('projectId'))
 const mold = localStorage.getItem('mold')
 export default {
+  components: {
+    steps
+  },
   props: {
     moduleId: {
       type: Array,
@@ -491,12 +525,17 @@ export default {
     submitForm() {
       this.$refs.addFormRef.validate(async(valid) => {
         if (valid) {
-          const caseInfo = await editCaseInfo(this.addForm)
-          this.$message.success('保存成功')
-          this.$emit('save', caseInfo, !!this.addForm.id)
-          this.addForm = caseInfo
+          const flag = this.$refs.steps.validate()
+          if (flag) {
+            const caseInfo = await editCaseInfo(this.addForm)
+            this.$message.success('保存成功')
+            this.$emit('save', caseInfo, !!this.addForm.id)
+            this.addForm = caseInfo
+          } else {
+            this.$message.error('请检查用例步骤信息是否完善')
+          }
         } else {
-          this.$message.error('请检查信息是否完善')
+          this.$message.error('请检查基础信息是否完善')
         }
       })
     },

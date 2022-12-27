@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import dataType from '@/views/case/common/dataType'
+import { dataType } from '@/utils/localType'
 import previewTree from '@/views/case/common/previewJson'
 import exportJson from '@/views/case/common/exportJson'
 export default {
@@ -125,7 +125,7 @@ export default {
     }
   },
   created() {
-    this.dataTypeList = dataType.dataTypeList
+    this.dataTypeList = dataType
     this.dataList = this.createTree
     if (!this.dataList.length) {
       this.dataList.push({

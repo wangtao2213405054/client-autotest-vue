@@ -312,7 +312,7 @@
 </template>
 
 <script>
-import dataType from '@/views/case/common/dataType'
+import { dataType } from '@/utils/localType'
 import { platform } from '@/utils/localType'
 import { editCapabilitiesInfo, getCapabilitiesList, deleteCapabilitiesInfo } from '@/api/devices/capabilities'
 export default {
@@ -321,7 +321,7 @@ export default {
     return {
       title: '新增映射',
       dialogVisible: false,
-      paramsTypeList: dataType.dataTypeList,
+      paramsTypeList: dataType,
       addForm: {
         name: null,
         platformName: null,

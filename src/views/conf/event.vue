@@ -343,7 +343,7 @@
     <el-pagination
       style="text-align: right; margin-top: 15px"
       background
-      :page-size="requestForm.size"
+      :page-size="requestForm.pageSize"
       layout="total, prev, pager, next"
       :total="requestForm.total"
       @current-change="handleCurrentChange"
@@ -352,8 +352,9 @@
 </template>
 
 <script>
-import dataType from '@/views/case/common/dataType'
+import { dataType } from '@/utils/localType'
 import { deleteEventInfo, editEventInfo, getEventList } from '@/api/conf/event'
+import { selectType } from '@/utils/localType'
 export default {
   name: 'Event',
   data() {
@@ -369,19 +370,12 @@ export default {
         func: [],
         projectId: localStorage.getItem('projectId')
       },
-      paramsTypeList: dataType.dataTypeList,
-      selectTypeList: [
-        { key: 'Custom', value: '自定义数据选择器' },
-        { key: 'DataType', value: '数据类型选择器' },
-        { key: 'Boolean', value: '布尔选择器' },
-        { key: 'Element', value: '元素选择器' },
-        { key: 'Api', value: '接口选择器' },
-        { key: 'ElementIndex', value: '元素位置选择器' }
-      ],
+      paramsTypeList: dataType,
+      selectTypeList: selectType,
       eventList: [],
       requestForm: {
         page: 1,
-        size: 20,
+        pageSize: 20,
         total: null,
         projectId: localStorage.getItem('projectId'),
         platform: localStorage.getItem('mold'),
