@@ -248,7 +248,7 @@ export default {
         const models = model ? String(value.id) : '0'
         if (item.name === models) {
           item.title = value.name
-          item.name = String(value.name)
+          item.name = String(value.id)
           item.content = value
           this.editableTabsValue = item.name
         }

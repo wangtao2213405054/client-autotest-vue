@@ -11,10 +11,11 @@
       :expand-on-click-node="false"
       :allow-drop="allowDrop"
       @node-click="caseExpanded"
+      @node-drop="rearrangement"
     >
       <div slot-scope="{ node, data }" class="custom-tree-node">
         <el-tooltip effect="dark" :content="data.desc" placement="top" :open-delay="1000">
-          <span class="caseStepsTitle">{{ data.name }}</span>
+          <span class="caseStepsTitle">{{ data.index + '. ' + data.name }}</span>
         </el-tooltip>
         <el-form
           :ref="`treeStepsFormRef${data.key}`"
@@ -176,6 +177,7 @@ export default {
     // 添加步骤
     async addSteps(value) {
       value.key = Date.now() + Math.random()
+      value.index = this.caseSteps.length + 1
       this.caseSteps.push(JSON.parse(JSON.stringify(value)))
     },
     // 删除节点
@@ -184,6 +186,9 @@ export default {
       const children = parent.data.children || parent.data
       const index = children.findIndex(d => d.id === data.id)
       children.splice(index, 1)
+      children.forEach((item, index) => {
+        item.index = index + 1
+      })
     },
     // 展开/关闭内置选择器时调用的钩子
     async getInlaySelectInfo(model, source, unfold) {
@@ -192,7 +197,7 @@ export default {
         this.$set(source, 'source', inlay)
       }
     },
-    // 递归获取数中的所有key
+    // 递归获取数中的所有 key
     getTreeKeys(tree) {
       const keys = []
       tree.forEach(item => {
@@ -236,6 +241,7 @@ export default {
         this.$set(data, 'children', [])
       }
       value.key = Date.now() + Math.random()
+      value.index = data.children.length + 1
       data.children.push(JSON.parse(JSON.stringify(value)))
     },
     // 双击展开收齐节点
@@ -251,6 +257,19 @@ export default {
           this.treeClickCount = 0
         }
       }, 200)
+    },
+    // 更新 Case Steps 索引信息
+    updateCaseStepsIndex(tree) {
+      tree.forEach((item, index) => {
+        item.index = index + 1
+        if (item.subset && item.children) {
+          this.updateCaseStepsIndex(item.children)
+        }
+      })
+    },
+    // 当 tree 出现拖动后更新索引
+    rearrangement() {
+      this.updateCaseStepsIndex(this.caseSteps)
     }
   }
 }
