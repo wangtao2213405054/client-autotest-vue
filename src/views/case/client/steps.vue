@@ -10,20 +10,20 @@
       draggable
       :expand-on-click-node="false"
       :allow-drop="allowDrop"
+      @node-click="caseExpanded"
     >
-      <div slot-scope="{ node, data }">
+      <div slot-scope="{ node, data }" class="custom-tree-node">
+        <el-tooltip effect="dark" :content="data.desc" placement="top" :open-delay="1000">
+          <span class="caseStepsTitle">{{ data.name }}</span>
+        </el-tooltip>
         <el-form
-          ref="treeStepsFormRef"
+          :ref="`treeStepsFormRef${data.key}`"
           :model="data"
           class="stepContext"
-          status-icon
           :show-message="false"
           inline
           hide-required-asterisk
         >
-          <el-form-item
-            :label="data.name"
-          />
           <el-form-item v-if="!data.func.length">
             <el-input v-model="data.name" readonly />
           </el-form-item>
@@ -34,7 +34,7 @@
               style="width: 180px"
               :prop="'func.' + index + '.default'"
               :rules="[
-                { required: true, message: item.placeholder, trigger: 'blur' },
+                { required: true, trigger: 'blur' },
               ]"
             >
               <el-tooltip effect="dark" :open-delay="1000" :content="item.placeholder" placement="top">
@@ -74,39 +74,37 @@
               </el-tooltip>
             </el-form-item>
           </span>
-          <span style="padding-right: 8px; position: fixed; right: 0">
-            <el-form-item>
-              <el-dropdown v-if="data.subset" trigger="click" style="margin-right: 5px">
-                <el-button
-                  type="text"
-                  size="mini"
-                >
-                  添加子节点
-                </el-button>
-                <el-dropdown-menu slot="dropdown" class="cont">
-                  <el-dropdown-item
-                    v-for="item in eventList"
-                    :key="item.id"
-                    divided
-                    @click.native="() => addNode(node, data, item)"
-                  >
-                    <el-tooltip effect="dark" :content="item.desc" placement="right">
-                      <span> {{ item.name }} </span>
-                    </el-tooltip>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-              <el-button
-                class="delete-button"
-                type="text"
-                size="mini"
-                @click="() => remove(node, data)"
-              >
-                删除
-              </el-button>
-            </el-form-item>
-          </span>
         </el-form>
+        <span>
+          <el-dropdown v-if="data.subset" trigger="click" style="margin-right: 5px">
+            <el-button
+              type="text"
+              size="mini"
+            >
+              添加子节点
+            </el-button>
+            <el-dropdown-menu slot="dropdown" class="cont">
+              <el-dropdown-item
+                v-for="item in eventList"
+                :key="item.id"
+                divided
+                @click.native="() => addNode(node, data, item)"
+              >
+                <el-tooltip effect="dark" :content="item.desc" placement="right">
+                  <span> {{ item.name }} </span>
+                </el-tooltip>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <el-button
+            class="delete-button"
+            type="text"
+            size="mini"
+            @click="() => remove(node, data)"
+          >
+            删除
+          </el-button>
+        </span>
       </div>
     </el-tree>
     <div class="eventSelect">
@@ -147,7 +145,8 @@ export default {
   data() {
     return {
       eventList: [],
-      caseSteps: []
+      caseSteps: [],
+      treeClickCount: 0
     }
   },
   created() {
@@ -193,13 +192,38 @@ export default {
         this.$set(source, 'source', inlay)
       }
     },
+    // 递归获取数中的所有key
+    getTreeKeys(tree) {
+      const keys = []
+      tree.forEach(item => {
+        keys.push(item.key)
+        if (item.subset && item.children) {
+          keys.push.apply(keys, this.getTreeKeys(item.children))
+        }
+      })
+      return keys
+    },
     // 触发表单校验规则
     validate() {
-      let flag = null
-      this.$refs.treeStepsFormRef.validate((valid) => {
-        flag = !!valid
+      const flag = []
+      const keys = this.getTreeKeys(this.caseSteps)
+      keys.forEach(item => {
+        this.$refs[`treeStepsFormRef${item}`].validate((valid) => {
+          flag.push(valid)
+        })
       })
-      return flag
+      if (flag.includes(false)) {
+        this.$nextTick(() => {
+          const isError = document.getElementsByClassName('is-error')
+          if (isError.length) {
+            isError[0].scrollIntoView({
+              block: 'center',
+              behavior: 'smooth'
+            })
+          }
+        })
+      }
+      return !flag.includes(false)
     },
     // 判断是否可以放置在此位置
     allowDrop(draggingNode, dropNode, type) {
@@ -213,6 +237,20 @@ export default {
       }
       value.key = Date.now() + Math.random()
       data.children.push(JSON.parse(JSON.stringify(value)))
+    },
+    // 双击展开收齐节点
+    caseExpanded(data, node) {
+      this.treeClickCount++
+      window.setTimeout(() => {
+        // 双击事件
+        if (this.treeClickCount > 1 && data.subset) {
+          this.treeClickCount = 0
+          // 展开或收起树节点
+          node.expanded ? node.collapse() : node.expand()
+        } else {
+          this.treeClickCount = 0
+        }
+      }, 200)
     }
   }
 }
@@ -239,11 +277,18 @@ export default {
   padding-right: 8px;
 }
 .stepContext {
-  //word-break: break-word;
-  width: 100%;
   white-space: pre-wrap;
 }
 .el-form-item.el-form-item {
   margin-bottom: 5px;
+}
+.caseStepsTitle {
+  text-align: right;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #606266;
+  padding: 0 12px 0 0;
+  box-sizing: border-box;
+  font-weight: 700
 }
 </style>

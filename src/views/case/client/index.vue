@@ -245,8 +245,12 @@ export default {
     // 点击保存时的钩子
     saveEvent(value, model) {
       this.editableTabs.forEach(item => {
-        if (item.name === model ? String(value.id) : '0') {
+        const models = model ? String(value.id) : '0'
+        if (item.name === models) {
           item.title = value.name
+          item.name = String(value.name)
+          item.content = value
+          this.editableTabsValue = item.name
         }
       })
       this.getCaseList()
