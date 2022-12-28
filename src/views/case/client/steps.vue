@@ -27,7 +27,7 @@
           <el-form-item v-if="!data.func.length">
             <el-input v-model="data.name" readonly />
           </el-form-item>
-          <span v-else>
+          <div v-else>
             <el-form-item
               v-for="(item, index) in data.func"
               :key="item.key"
@@ -73,9 +73,9 @@
                 </el-select>
               </el-tooltip>
             </el-form-item>
-          </span>
+          </div>
         </el-form>
-        <span>
+        <div style="margin-left: auto">
           <el-dropdown v-if="data.subset" trigger="click" style="margin-right: 5px">
             <el-button
               type="text"
@@ -104,7 +104,7 @@
           >
             删除
           </el-button>
-        </span>
+        </div>
       </div>
     </el-tree>
     <div class="eventSelect">
@@ -272,7 +272,7 @@ export default {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   font-size: 14px;
   padding-right: 8px;
 }
