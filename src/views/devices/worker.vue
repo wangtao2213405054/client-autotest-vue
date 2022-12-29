@@ -158,7 +158,7 @@
       <el-table-column prop="name" label="设备名称" width="150px" />
       <el-table-column prop="blocker" label="熔断阈值" width="70px" align="center" />
       <el-table-column label="绑定映射" width="120px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <div
             v-for="item in mappingList"
             :key="item.id"
@@ -168,7 +168,7 @@
         </template>
       </el-table-column>
       <el-table-column label="归属设备" width="120px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <div
             v-for="item in masterList"
             :key="item.id"
@@ -179,7 +179,7 @@
       </el-table-column>
       <el-table-column prop="desc" label="事件描述" show-overflow-tooltip />
       <el-table-column label="设备状态" width="120px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <div
             v-for="item in statusList"
             :key="item.key"
@@ -200,7 +200,7 @@
       </el-table-column>
       <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
       <el-table-column label="操作" width="180px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-button
             :icon="scope.row.switch ? 'el-icon-video-pause' : 'el-icon-video-play'"
             :class="scope.row.switch ? 'yellow-button' : 'green_button'"

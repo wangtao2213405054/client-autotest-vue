@@ -66,7 +66,7 @@
       <el-table-column type="index" label="编号" width="60" align="center" />
       <el-table-column prop="name" label="版本名称" width="150px" />
       <el-table-column prop="name" label="版本标识" width="150px">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-tag disable-transitions :type="scope.row.effect" effect="dark">{{ scope.row.identify }}</el-tag>
         </template>
       </el-table-column>
@@ -74,7 +74,7 @@
       <el-table-column prop="createTime" label="创建时间" width="140px" align="center" />
       <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
       <el-table-column label="操作" width="120px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-button
             icon="el-icon-edit"
             size="mini"

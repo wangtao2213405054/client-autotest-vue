@@ -323,7 +323,7 @@
       <el-table-column prop="desc" label="事件描述" show-overflow-tooltip />
       <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
       <el-table-column label="操作" width="120px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-button
             icon="el-icon-edit"
             size="mini"

@@ -8,7 +8,7 @@
       <b-code-editor
         ref="editor"
         v-model="translationStr"
-        theme="material"
+        theme="idea"
         :line-wrap="false"
       />
       <span slot="footer" class="dialog-footer">

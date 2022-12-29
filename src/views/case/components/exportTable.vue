@@ -42,14 +42,14 @@
         </template>
       </el-table-column>
       <el-table-column label="参数名" width="150px">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-tooltip :disabled="methods !== 'path'" content="自动提取接口路径中的 { path } 形式参数, 请在接口路径中修改" placement="top">
             <el-input v-model="scope.row['name']" :disabled="methods === 'path'" placeholder="请输入参数名称" @blur="pushData(scope.$index)" />
           </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column label="类型" width="150px">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-tooltip :disabled="!typeDisable" content="默认类型为String 不允许修改" placement="top">
             <el-select v-model="scope.row['dataType']" :disabled="typeDisable" placeholder="请选择参数类型" @blur="pushData(scope.$index)">
               <el-option
@@ -68,19 +68,19 @@
         </template>
       </el-table-column>
       <el-table-column label="必填" width="50px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-tooltip :disabled="methods !== 'path'" content="来自 URL Path 必填" placement="top">
             <el-checkbox v-model="scope.row['mandatory']" :disabled="methods === 'path'" @change="pushData(scope.$index)" />
           </el-tooltip>
         </template>
       </el-table-column>
       <el-table-column label="示例值" width="150px">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-input v-model="scope.row['sample']" placeholder="请输入示例值" @blur="pushData(scope.$index)" />
         </template>
       </el-table-column>
       <el-table-column label="说明">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-input v-model="scope.row['describe']" placeholder="请输入字段说明" @blur="pushData(scope.$index)" />
         </template>
       </el-table-column>
@@ -90,7 +90,7 @@
             <el-button type="text" icon="el-icon-s-cooperation" style="height: 6px" size="mini" @click="batchEditor" />
           </el-tooltip>
         </template>
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-button v-if="tableList.length - 1 !== scope.$index" style="color: #909399" icon="el-icon-close" type="text" @click="deleteItems(scope.$index)" />
         </template>
       </el-table-column>

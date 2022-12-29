@@ -17,7 +17,7 @@ export async function getInlaySelectInfo(model) {
     }
     const { items } = await getElementList(request)
     items.forEach(item => {
-      data.push({ id: item.label, name: item.name })
+      data.push({ id: item.label, name: item.name, desc: item.desc })
     })
   } else if (model === 'ElementIndex') {
     for (let i = 0; i < 20; i++) {

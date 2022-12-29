@@ -42,7 +42,7 @@
           <el-table-column prop="name" label="用例名称" show-overflow-tooltip />
           <el-table-column prop="desc" label="用例描述" show-overflow-tooltip />
           <el-table-column label="优先级" width="80px" align="center">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <div
                 v-for="item in priorityList"
                 :key="item.id"
@@ -54,7 +54,7 @@
             </template>
           </el-table-column>
           <el-table-column label="用例类型" width="80px" align="center">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <div
                 v-for="item in specialList"
                 :key="item.key"
@@ -70,7 +70,7 @@
             </template>
           </el-table-column>
           <el-table-column label="用例状态" width="80px" align="center">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <div
                 v-for="item in actionList"
                 :key="item.key"
@@ -89,7 +89,7 @@
           <el-table-column prop="updateName" label="更新人" width="100px" align="center" />
           <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
           <el-table-column label="操作" width="120px" align="center">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-button
                 icon="el-icon-edit"
                 size="mini"

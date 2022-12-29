@@ -50,6 +50,7 @@
                   v-model="item.default"
                   :placeholder="item.placeholder"
                   clearable
+                  filterable
                 >
                   <el-option
                     v-for="items in item.source"
@@ -63,6 +64,7 @@
                   v-model="item.default"
                   :placeholder="item.placeholder"
                   clearable
+                  filterable
                   @visible-change="getInlaySelectInfo(item.selectModel, item, $event)"
                 >
                   <el-option
@@ -70,7 +72,11 @@
                     :key="items.id"
                     :label="items.name"
                     :value="items.id"
-                  />
+                  >
+                    <el-tooltip :disabled="!items.desc" effect="dark" :open-delay="500" :content="items.desc" placement="right">
+                      <span>{{ items.name }}</span>
+                    </el-tooltip>
+                  </el-option>
                 </el-select>
               </el-tooltip>
             </el-form-item>

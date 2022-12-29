@@ -111,14 +111,14 @@
       <el-table-column prop="name" label="用户名称" align="center" show-overflow-tooltip />
       <el-table-column prop="mobile" label="手机号" align="center" width="100px" />
       <el-table-column prop="state" label="状态" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-tag v-if="scope.row['state']" type="success" size="small">在职</el-tag>
           <el-tag v-else type="danger" size="small" effect="dark">离职</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="140px" align="center" />
       <el-table-column label="操作" width="120px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-button icon="el-icon-edit" size="mini" type="text" @click="updateUserInfo(scope.row)">修改</el-button>
           <el-button class="delete-button" icon="el-icon-delete" size="mini" type="text" @click="deleteManagementInfo([scope.row['id']])">删除</el-button>
         </template>

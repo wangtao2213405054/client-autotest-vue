@@ -73,7 +73,7 @@
       <el-table-column prop="identifier" label="标识符" align="center" show-overflow-tooltip />
       <el-table-column prop="updateTime" label="修改时间" align="center" width="140px" />
       <el-table-column label="操作" align="center" width="180px">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-button type="text" icon="el-icon-edit" size="mini" @click="updateButton(scope.row)">修改</el-button>
           <el-button type="text" icon="el-icon-plus" size="mini" @click="newNode(scope.row.id)">新增</el-button>
           <el-button class="delete-button" icon="el-icon-delete" type="text" size="mini" @click="deletePermissionsInfo(scope.row.id)">删除</el-button>

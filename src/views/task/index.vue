@@ -77,7 +77,7 @@
       <el-table-column type="index" label="编号" width="60" align="center" />
       <el-table-column prop="name" label="设备名称" width="150px" />
       <el-table-column prop="name" label="任务状态" width="150px">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <div
             v-for="item in taskStatusList"
             :key="item.status"

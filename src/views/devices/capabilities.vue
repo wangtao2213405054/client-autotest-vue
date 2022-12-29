@@ -271,7 +271,7 @@
       <el-table-column type="index" label="编号" width="80" align="center" />
       <el-table-column prop="name" label="映射名称" width="200px" />
       <el-table-column prop="platformName" label="平台映射">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <div
             v-for="item in platformList"
             :key="item.id"
@@ -283,7 +283,7 @@
       <el-table-column prop="createTime" label="创建时间" width="140px" align="center" />
       <el-table-column prop="updateTime" label="更新时间" width="140px" align="center" />
       <el-table-column label="操作" width="120px" align="center">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-button
             icon="el-icon-edit"
             size="mini"

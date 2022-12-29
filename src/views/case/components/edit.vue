@@ -49,7 +49,7 @@
               :props="propsData"
               clearable
             >
-              <template slot-scope="{ node, data }">
+              <template v-slot="{ node, data }">
                 <span v-if="data['identifier'] === 'folder'">{{ data.name }}</span>
               </template>
             </el-cascader>
