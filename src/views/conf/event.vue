@@ -6,7 +6,7 @@
       width="80%"
       @close="closeDialog"
     >
-      <el-form ref="addFormRef" :model="addForm" label-width="80px">
+      <el-form ref="addFormRef" :model="addForm" label-width="100px">
         <el-form-item
           label="事件名称"
           prop="name"
@@ -40,6 +40,26 @@
             type="textarea"
             :rows="2"
             clearable
+          />
+        </el-form-item>
+        <el-form-item
+          label="事件截图"
+        >
+          <span slot="label">
+            是否截图
+            <el-tooltip
+              effect="dark"
+              trigger="click"
+              content="当此事件完成后会进行截图，并将截图信息添加至 GIF 动图中"
+              placement="top"
+            >
+              <i class="el-icon-info" />
+            </el-tooltip>
+          </span>
+          <el-switch
+            v-model="addForm.screenshot"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
           />
         </el-form-item>
         <el-form-item
@@ -355,6 +375,8 @@
 import { dataType } from '@/utils/localType'
 import { deleteEventInfo, editEventInfo, getEventList } from '@/api/conf/event'
 import { selectType } from '@/utils/localType'
+const projectId = JSON.parse(localStorage.getItem('projectId'))
+const mold = localStorage.getItem('mold')
 export default {
   name: 'Event',
   data() {
@@ -368,7 +390,8 @@ export default {
         platform: null,
         subset: false,
         func: [],
-        projectId: localStorage.getItem('projectId')
+        projectId: projectId,
+        screenshot: false
       },
       paramsTypeList: dataType,
       selectTypeList: selectType,
@@ -377,8 +400,8 @@ export default {
         page: 1,
         pageSize: 20,
         total: null,
-        projectId: localStorage.getItem('projectId'),
-        platform: localStorage.getItem('mold'),
+        projectId: projectId,
+        platform: mold,
         name: null,
         mapping: null
       },
@@ -480,7 +503,8 @@ export default {
         platform: null,
         func: [],
         subset: false,
-        projectId: localStorage.getItem('projectId')
+        projectId: projectId,
+        screenshot: false
       }
       this.$refs.addFormRef.clearValidate()
     },
