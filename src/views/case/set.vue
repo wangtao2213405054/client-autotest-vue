@@ -29,6 +29,17 @@
           />
         </el-form-item>
         <el-form-item
+          v-if="addForm.special"
+          label="测试用例"
+        >
+          <el-cascader
+            v-model="addForm.case"
+            :props="loadSpecialCase"
+            clearable
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-form-item
           label="集合描述"
           prop="desc"
         >
@@ -115,6 +126,8 @@
 
 <script>
 import { editSetInfo, getSetList, deleteSetInfo } from '@/api/business/set'
+import { getModulesList } from '@/api/business/folder'
+import { getCaseList } from '@/api/business/case'
 
 const projectId = JSON.parse(localStorage.getItem('projectId'))
 export default {
@@ -125,7 +138,8 @@ export default {
         projectId: projectId,
         special: false,
         desc: null,
-        customSet: []
+        customSet: [],
+        case: []
       },
       requestForm: {
         page: 1,
@@ -141,7 +155,46 @@ export default {
       specialList: [
         { key: false, label: '普通集合', tag: null },
         { key: true, label: '特殊集合', tag: 'success' }
-      ]
+      ],
+      // 加载用例
+      loadSpecialCase: {
+        lazy: true,
+        async lazyLoad(node, resolve) {
+          const { level, data } = node
+          if (level <= 1) {
+            const module = await getModulesList({ projectId, id: data ? data.id : level })
+            module.forEach(item => {
+              item.disabled = level === 0 ? item.leaf : item.exist
+              item.leaf = level === 0 ? item.leaf : item.exist
+            })
+            resolve(module)
+          } else {
+            const request = {
+              page: 1,
+              pageSize: 9999,
+              projectId,
+              special: false,
+              folderId: [1, data.id]
+            }
+            const { items } = await getCaseList(request)
+            items.forEach(item => {
+              item.leaf = true
+            })
+            resolve(items)
+          }
+        },
+        value: 'id',
+        label: 'name',
+        multiple: true
+        // checkStrictly: true
+      }
+    }
+  },
+  watch: {
+    'addForm.special'(newData) {
+      if (!newData) {
+        this.addForm.case = []
+      }
     }
   },
   created() {
@@ -172,7 +225,8 @@ export default {
         projectId: projectId,
         special: false,
         desc: null,
-        customSet: []
+        customSet: [],
+        case: []
       }
       this.$refs.addFormRef.clearValidate()
     },
