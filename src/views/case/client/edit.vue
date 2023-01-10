@@ -437,7 +437,7 @@ export default {
         async lazyLoad(node, resolve) {
           const { level, data } = node
           if (level <= 1) {
-            const module = await getModulesList({ projectId, id: data ? data.id : level })
+            const module = await getModulesList({ projectId, id: data ? data.id : level, special: true })
             module.forEach(item => {
               item.disabled = level === 0 ? item.leaf : item.exist
               item.leaf = level === 0 ? item.leaf : item.exist

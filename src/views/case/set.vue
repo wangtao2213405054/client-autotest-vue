@@ -33,7 +33,8 @@
           label="测试用例"
         >
           <el-cascader
-            v-model="addForm.case"
+            v-model="addForm.customSet"
+            :options="options"
             :props="loadSpecialCase"
             clearable
             style="width: 100%"
@@ -98,6 +99,8 @@
       <el-table-column label="操作" width="120px" align="center">
         <template v-slot="scope">
           <el-button
+            v-model="scope.row.loading"
+            :loading="scope.row.loading"
             icon="el-icon-edit"
             size="mini"
             type="text"
@@ -132,14 +135,14 @@ import { getCaseList } from '@/api/business/case'
 const projectId = JSON.parse(localStorage.getItem('projectId'))
 export default {
   data() {
+    const _this = this
     return {
       addForm: {
         name: null,
         projectId: projectId,
         special: false,
         desc: null,
-        customSet: [],
-        case: []
+        customSet: []
       },
       requestForm: {
         page: 1,
@@ -156,32 +159,12 @@ export default {
         { key: false, label: '普通集合', tag: null },
         { key: true, label: '特殊集合', tag: 'success' }
       ],
+      options: [],
       // 加载用例
       loadSpecialCase: {
         lazy: true,
         async lazyLoad(node, resolve) {
-          const { level, data } = node
-          if (level <= 1) {
-            const module = await getModulesList({ projectId, id: data ? data.id : level })
-            module.forEach(item => {
-              item.disabled = level === 0 ? item.leaf : item.exist
-              item.leaf = level === 0 ? item.leaf : item.exist
-            })
-            resolve(module)
-          } else {
-            const request = {
-              page: 1,
-              pageSize: 9999,
-              projectId,
-              special: false,
-              folderId: [1, data.id]
-            }
-            const { items } = await getCaseList(request)
-            items.forEach(item => {
-              item.leaf = true
-            })
-            resolve(items)
-          }
+          await _this.lazyLoads(node, resolve)
         },
         value: 'id',
         label: 'name',
@@ -190,15 +173,9 @@ export default {
       }
     }
   },
-  watch: {
-    'addForm.special'(newData) {
-      if (!newData) {
-        this.addForm.case = []
-      }
-    }
-  },
-  created() {
-    this.getSetList()
+  async created() {
+    this.options = await this.getModuleList(0, 0)
+    await this.getSetList()
   },
   methods: {
     // 查询集合信息
@@ -225,8 +202,7 @@ export default {
         projectId: projectId,
         special: false,
         desc: null,
-        customSet: [],
-        case: []
+        customSet: []
       }
       this.$refs.addFormRef.clearValidate()
     },
@@ -261,10 +237,25 @@ export default {
       })
     },
     // 编辑集合
-    updateVersion(row) {
+    async updateVersion(row) {
       this.title = '编辑集合'
       this.addForm = JSON.parse(JSON.stringify(row))
       this.addForm.projectId = projectId
+      this.$set(row, 'loading', true)
+      // 根据已绑定的信息对用例树进行加载
+      for (let i = 0; i < row.customSet.length; i++) {
+        const node = this.options.find(item => item.id === row.customSet[i][0])
+        if (!node.children) {
+          const module = await this.getModuleList(row.customSet[i][0], 1)
+          this.$set(node, 'children', module)
+        }
+        const children = node.children.find(item => item.id === row.customSet[i][1])
+        if (!children.children) {
+          const _case = await this.getCaseList(row.customSet[i][1])
+          this.$set(children, 'children', _case)
+        }
+      }
+      this.$set(row, 'loading', false)
       this.dialogVisible = true
     },
     // 删除集合
@@ -279,6 +270,46 @@ export default {
       }
       await deleteSetInfo({ id })
       await this.getSetList()
+    },
+    // 选择器加载方法
+    async lazyLoads(node, resolve) {
+      const { level, data } = node
+      if (level === 0 && !this.options.length) {
+        this.options = await this.getModuleList(data ? data.id : level, level)
+      } else if (level === 1 && !data.leaf && !node.children) {
+        const node = this.options.find(item => item.id === data.id)
+        const module = await this.getModuleList(data ? data.id : level, level)
+        this.$set(node, 'children', module)
+      } else if (level === 2 && !data.leaf && !node.children) {
+        const _case = await this.getCaseList(data.id)
+        this.$set(data, 'children', _case)
+      }
+      resolve([])
+    },
+    // 获取模块列表
+    async getModuleList(id, level) {
+      const module = await getModulesList({ projectId, id, special: false })
+      module.forEach(item => {
+        item.disabled = level === 0 ? item.leaf : item.exist
+        item.leaf = level === 0 ? item.leaf : item.exist
+      })
+      return module
+    },
+    // 获取用例列表
+    async getCaseList(id) {
+      const request = {
+        page: 1,
+        pageSize: 9999,
+        projectId,
+        special: false,
+        folderId: [1, id]
+      }
+      const { items } = await getCaseList(request)
+      items.forEach(item => {
+        item.leaf = true
+        item.lazy = false
+      })
+      return items
     }
   }
 }

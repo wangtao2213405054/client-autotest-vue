@@ -6,7 +6,7 @@
       width="50%"
       @close="closeDialog"
     >
-      <el-form ref="addFormRef" :model="addForm" label-width="80px">
+      <el-form ref="addFormRef" :model="addForm" label-width="100px">
         <el-form-item
           label="设备名称"
           prop="name"
