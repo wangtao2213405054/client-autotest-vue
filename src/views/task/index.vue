@@ -297,8 +297,8 @@ export default {
       urlContent: '',
       setList: [],
       priorityList: [
-        { id: 'highest', name: '由高到低' },
-        { id: 'lowest', name: '由低到高' }
+        { id: false, name: '由高到低' },
+        { id: true, name: '由低到高' }
       ],
       domainList: []
     }
@@ -328,6 +328,7 @@ export default {
     closeDialog() {},
     // 提交表单
     submitForm() {
+      console.log(this.addForm)
       this.$refs.addFormRef.validate(async(valid) => {
         if (valid) {
           await newTaskInfo(this.addForm)
