@@ -201,20 +201,45 @@
         <el-button icon="el-icon-plus" type="success" @click="addTask">添 加</el-button>
       </el-form-item>
     </el-form>
-    <el-table header-row-class-name="table-header-style" :data="taskList" stripe style="width: 100%" @row-click="toReport">
-      <el-table-column type="index" label="编号" width="60" align="center" />
-      <el-table-column prop="name" label="设备名称" width="150px" />
-      <el-table-column prop="name" label="任务状态" width="150px">
-        <template v-slot="scope">
-          <div
-            v-for="item in taskStatusList"
-            :key="item.status"
-          >
-            <span v-if="scope.row.status === item.status">{{ item.label }}</span>
+    <el-divider />
+    <div class="user-activity">
+      <div v-for="item in taskList" :key="item.id">
+        <div class="post" @click="toReport(item.id)">
+          <div class="user-block">
+            <img class="img-circle" alt="" :src="item.avatar + avatarPrefix">
+            <span class="username text-muted">{{ item['name'] }}</span>
+            <span
+              v-for="status in taskStatusList"
+              :key="status.status"
+              class="mold"
+            >
+              <el-tag v-if="item.status === status.status" :type="status.type" effect="dark">
+                <i :class="status.icon" />
+                {{ status.label }}
+              </el-tag>
+            </span>
+            <span class="description">{{ item['username'] + ' 创建于 ' + item['createTime'] }}</span>
           </div>
-        </template>
-      </el-table-column>
-    </el-table>
+          <p>
+            {{ item['describe'] }}
+          </p>
+          <el-descriptions :column="5" :label-style="{'font-weight': 'bold'}">
+            <el-descriptions-item label="所属平台">
+              <div
+                v-for="items in platformList"
+                :key="items.id"
+              >
+                <span v-if="items.id === item.platform">{{ items.name }}</span>
+              </div>
+            </el-descriptions-item>
+            <el-descriptions-item label="运行环境">{{ item['environmentalName'] }}</el-descriptions-item>
+            <el-descriptions-item :label="item.status === 0 ? '指定设备' : '执行设备'">{{ item['devicesName'] ? item['devicesName'] : '暂无' }}</el-descriptions-item>
+            <el-descriptions-item label="用例数量">{{ item['count'] }}</el-descriptions-item>
+            <el-descriptions-item :label="urlName">{{ item['url'] }}</el-descriptions-item>
+          </el-descriptions>
+        </div>
+      </div>
+    </div>
     <el-pagination
       style="text-align: right; margin-top: 15px"
       background
@@ -235,12 +260,14 @@ import { getVersionList } from '@/api/business/version'
 import { getSetList } from '@/api/business/set'
 import { getDomainList } from '@/api/mock/domain'
 let platformSelect = ''
+const avatarPrefix = '?imageView2/1/w/80/h/80'
 const projectId = JSON.parse(localStorage.getItem('projectId'))
 const mold = localStorage.getItem('mold')
 export default {
   name: 'Index',
   data() {
     return {
+      avatarPrefix,
       addForm: {
         name: null,
         platform: null,
@@ -286,10 +313,10 @@ export default {
         total: null
       },
       taskStatusList: [
-        { status: 0, label: '等待执行' },
-        { status: 1, label: '执行中' },
-        { status: 2, label: '执行成功' },
-        { status: 3, label: '执行失败' }
+        { status: 0, label: '等待执行', type: 'warning', icon: 'el-icon-time' },
+        { status: 1, label: '正在执行', type: '', icon: 'el-icon-loading' },
+        { status: 2, label: '执行成功', type: 'success', icon: 'el-icon-circle-check' },
+        { status: 3, label: '执行失败', type: 'danger', icon: 'el-icon-circle-close' }
       ],
       versionList: [],
       urlName: '',
@@ -300,7 +327,13 @@ export default {
         { id: false, name: '由高到低' },
         { id: true, name: '由低到高' }
       ],
-      domainList: []
+      domainList: [],
+      avatarList: [
+        require('@/icons/png/mouse.png'), require('@/icons/png/ox.png'), require('@/icons/png/tiger.png'),
+        require('@/icons/png/rabbit.png'), require('@/icons/png/dragon.png'), require('@/icons/png/snake.png'),
+        require('@/icons/png/horse.png'), require('@/icons/png/sheep.png'), require('@/icons/png/monkey.png'),
+        require('@/icons/png/chicken.png'), require('@/icons/png/dog.png'), require('@/icons/png/pig.png')
+      ]
     }
   },
   watch: {
@@ -313,7 +346,7 @@ export default {
     }
   },
   created() {
-    this.urlName = mold === 'selenium' ? '执行域名' : '下载链接'
+    this.urlName = mold === 'selenium' ? '启动链接' : '下载链接'
     this.urlMessage = mold === 'selenium' ? '请输入本次任务启动执行的域名地址信息' : '请输入本次运行的安装包下载链接'
     this.filterPlatform()
     this.getTaskList()
@@ -328,13 +361,12 @@ export default {
     closeDialog() {},
     // 提交表单
     submitForm() {
-      console.log(this.addForm)
       this.$refs.addFormRef.validate(async(valid) => {
         if (valid) {
           await newTaskInfo(this.addForm)
           this.$message.success('保存成功')
           this.dialogVisible = false
-          // await this.getWorkerList()
+          await this.getTaskList()
         } else {
           this.$message.error('请检查信息是否完善')
         }
@@ -359,6 +391,9 @@ export default {
     // 获取任务列表列表
     async getTaskList() {
       const { items, total } = await getTaskList(this.requestForm)
+      items.forEach(item => {
+        item.avatar = this.avatarList[Math.floor(Math.random() * this.avatarList.length)]
+      })
       this.taskList = items
       this.requestForm.total = total
     },
@@ -374,8 +409,8 @@ export default {
       })
     },
     // 进入测试报告页面
-    toReport(row) {
-      this.$router.push({ name: 'TaskReport', params: { id: row.id }})
+    toReport(id) {
+      this.$router.push({ name: 'TaskReport', params: { id }})
     },
     // 获取版本列表
     async getVersionList(bool) {
@@ -397,6 +432,92 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.user-activity {
+  .user-block {
 
+    .username,
+    .description {
+      display: block;
+      margin-left: 50px;
+      padding: 2px 0;
+    }
+
+    .username {
+      font-size: 16px;
+      color: #000;
+    }
+    .mold {
+      display: block;
+      float: right;
+      margin-right: 10px;
+      align-items: center;
+    }
+
+    :after {
+      clear: both;
+    }
+
+    .img-circle {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      float: left;
+    }
+
+    span {
+      font-weight: 500;
+      font-size: 12px;
+    }
+  }
+
+  .post {
+    font-size: 14px;
+    border-bottom: 1px solid #d2d6de;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    color: #666;
+
+    .image {
+      width: 100%;
+      height: 100%;
+
+    }
+
+    .user-images {
+      padding-top: 20px;
+    }
+  }
+
+  .list-inline {
+    padding-left: 0;
+    margin-left: -5px;
+    list-style: none;
+
+    li {
+      display: inline-block;
+      padding-right: 5px;
+      padding-left: 5px;
+      font-size: 13px;
+    }
+
+    .link-black {
+
+      &:hover,
+      &:focus {
+        color: #999;
+      }
+    }
+  }
+
+}
+
+.box-center {
+  margin: 0 auto;
+  display: table;
+}
+
+.text-muted {
+  color: #777;
+}
 </style>
