@@ -201,42 +201,45 @@
         <el-button icon="el-icon-plus" type="success" @click="addTask">添 加</el-button>
       </el-form-item>
     </el-form>
-    <el-divider />
     <div class="user-activity">
       <div v-for="item in taskList" :key="item.id">
-        <div class="post" @click="toReport(item.id)">
-          <div class="user-block">
-            <img class="img-circle" alt="" :src="item.avatar + avatarPrefix">
-            <span class="username text-muted">{{ item['name'] }}</span>
-            <span
-              v-for="status in taskStatusList"
-              :key="status.status"
-              class="mold"
-            >
-              <el-tag v-if="item.status === status.status" :type="status.type" effect="dark">
-                <i :class="status.icon" />
-                {{ status.label }}
-              </el-tag>
-            </span>
-            <span class="description">{{ item['username'] + ' 创建于 ' + item['createTime'] }}</span>
-          </div>
-          <p>
-            {{ item['describe'] }}
-          </p>
-          <el-descriptions :column="5" :label-style="{'font-weight': 'bold'}">
-            <el-descriptions-item label="所属平台">
-              <div
-                v-for="items in platformList"
-                :key="items.id"
+        <div :class="item.color">
+          <div class="post" @click="toReport(item.id)">
+            <div class="user-block">
+              <img class="img-circle" alt="" :src="item.avatar + avatarPrefix">
+              <span class="username text-muted">{{ item['name'] }}</span>
+              <span
+                v-for="status in taskStatusList"
+                :key="status.status"
+                class="mold"
               >
-                <span v-if="items.id === item.platform">{{ items.name }}</span>
-              </div>
-            </el-descriptions-item>
-            <el-descriptions-item label="运行环境">{{ item['environmentalName'] }}</el-descriptions-item>
-            <el-descriptions-item :label="item.status === 0 ? '指定设备' : '执行设备'">{{ item['devicesName'] ? item['devicesName'] : '暂无' }}</el-descriptions-item>
-            <el-descriptions-item label="用例数量">{{ item['count'] }}</el-descriptions-item>
-            <el-descriptions-item :label="urlName">{{ item['url'] }}</el-descriptions-item>
-          </el-descriptions>
+                <el-tag v-if="item.status === status.status" :disable-transitions="true" :type="status.type" effect="dark">
+                  <i :class="status.icon" />
+                  {{ status.label }}
+                </el-tag>
+              </span>
+              <span class="description">{{ item['username'] + ' 创建于 ' + item['createTime'] }}</span>
+            </div>
+            <p>
+              {{ item['describe'] }}
+            </p>
+            <el-descriptions :column="5" :label-style="{'font-weight': 'bold'}">
+              <el-descriptions-item label="所属平台">
+                <div
+                  v-for="items in platformList"
+                  :key="items.id"
+                >
+                  <span v-if="items.id === item.platform">{{ items.name }}</span>
+                </div>
+              </el-descriptions-item>
+              <el-descriptions-item label="运行环境">{{ item['environmentalName'] }}</el-descriptions-item>
+              <el-descriptions-item :label="item.status === 0 ? '指定设备' : '执行设备'">{{ item['devicesName'] ? item['devicesName'] : '暂无' }}</el-descriptions-item>
+              <el-descriptions-item label="用例数量">{{ item['count'] }}</el-descriptions-item>
+              <el-descriptions-item :label="urlName">
+                <tooltips :value="item.url" />
+              </el-descriptions-item>
+            </el-descriptions>
+          </div>
         </div>
       </div>
     </div>
@@ -259,12 +262,16 @@ import { platform } from '@/utils/localType'
 import { getVersionList } from '@/api/business/version'
 import { getSetList } from '@/api/business/set'
 import { getDomainList } from '@/api/mock/domain'
+import tooltips from '@/views/common/tooltips'
 let platformSelect = ''
 const avatarPrefix = '?imageView2/1/w/80/h/80'
 const projectId = JSON.parse(localStorage.getItem('projectId'))
 const mold = localStorage.getItem('mold')
 export default {
   name: 'Index',
+  components: {
+    tooltips
+  },
   data() {
     return {
       avatarPrefix,
@@ -310,7 +317,8 @@ export default {
       requestForm: {
         page: 1,
         pageSize: 20,
-        total: null
+        total: null,
+        projectId
       },
       taskStatusList: [
         { status: 0, label: '等待执行', type: 'warning', icon: 'el-icon-time' },
@@ -334,6 +342,16 @@ export default {
         require('@/icons/png/horse.png'), require('@/icons/png/sheep.png'), require('@/icons/png/monkey.png'),
         require('@/icons/png/chicken.png'), require('@/icons/png/dog.png'), require('@/icons/png/pig.png')
       ]
+    }
+  },
+  sockets: {
+    // 更新页面状态
+    taskStatus(data) {
+      this.taskList.forEach(item => {
+        if (item.id === data.taskId) {
+          item.status = data.status
+        }
+      })
     }
   },
   watch: {
@@ -390,9 +408,16 @@ export default {
     },
     // 获取任务列表列表
     async getTaskList() {
+      const _color = {
+        0: 'warning',
+        1: 'brand',
+        2: 'success',
+        3: 'danger'
+      }
       const { items, total } = await getTaskList(this.requestForm)
       items.forEach(item => {
         item.avatar = this.avatarList[Math.floor(Math.random() * this.avatarList.length)]
+        item.color = _color[item.status]
       })
       this.taskList = items
       this.requestForm.total = total
@@ -433,9 +458,33 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .el-descriptions__body .el-descriptions__table {
+  white-space: nowrap;
+}
+::v-deep .el-descriptions-item__content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 8px;
+}
+
+.warning {
+  background-color: rgba(230, 162, 60, 0.05);
+}
+.brand {
+  background-color: rgba(64, 158, 255, 0.05)
+}
+.success {
+  background-color: rgba(103, 194, 58, 0.05);
+}
+.danger {
+  background-color: rgba(245, 108, 108, 0.05);
+}
+::v-deep .el-descriptions__body {
+  background-color: rgba(245, 108, 108, 0);
+}
 .user-activity {
   .user-block {
-
     .username,
     .description {
       display: block;
@@ -474,7 +523,7 @@ export default {
   .post {
     font-size: 14px;
     border-bottom: 1px solid #d2d6de;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     padding-bottom: 15px;
     color: #666;
 
@@ -509,7 +558,6 @@ export default {
       }
     }
   }
-
 }
 
 .box-center {
