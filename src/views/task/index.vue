@@ -218,7 +218,9 @@
                   {{ status.label }}
                 </el-tag>
               </span>
-              <span class="description">{{ item['username'] + ' 创建于 ' + item['createTime'] }}</span>
+              <span class="description">
+                {{ item['username'] + ' 创建于 ' + item['createTime'] }}
+              </span>
             </div>
             <p>
               {{ item['describe'] }}
@@ -238,11 +240,17 @@
               <el-descriptions-item :label="urlName">
                 <tooltips :value="item.url" />
               </el-descriptions-item>
+              <el-descriptions-item label="成功用例">{{ item['passCase'] }}</el-descriptions-item>
+              <el-descriptions-item label="失败用例">{{ item['failCase'] }}</el-descriptions-item>
+              <el-descriptions-item v-if="item.status === 1" label="测试进度">
+                <el-progress style="width: 100%" :percentage="item['percentage']" :color="item['percentageColor']" />
+              </el-descriptions-item>
             </el-descriptions>
           </div>
         </div>
       </div>
     </div>
+    <el-empty v-if="!taskList.length" description="暂无任务，快来添加一个吧~" />
     <el-pagination
       style="text-align: right; margin-top: 15px"
       background
@@ -267,6 +275,12 @@ let platformSelect = ''
 const avatarPrefix = '?imageView2/1/w/80/h/80'
 const projectId = JSON.parse(localStorage.getItem('projectId'))
 const mold = localStorage.getItem('mold')
+const _color = {
+  0: 'warning',
+  1: 'brand',
+  2: 'success',
+  3: 'danger'
+}
 export default {
   name: 'Index',
   components: {
@@ -350,6 +364,18 @@ export default {
       this.taskList.forEach(item => {
         if (item.id === data.taskId) {
           item.status = data.status
+          item.color = _color[item.status]
+        }
+      })
+    },
+    // 更新任务运行信息
+    taskRunningStatus(data) {
+      this.taskList.forEach(item => {
+        if (item.id === data.id) {
+          item.passCase = data.pass
+          item.failCase = data.fail
+          item.percentage = data.percentage
+          item.percentageColor = this.getColor(data.percentage)
         }
       })
     }
@@ -408,16 +434,11 @@ export default {
     },
     // 获取任务列表列表
     async getTaskList() {
-      const _color = {
-        0: 'warning',
-        1: 'brand',
-        2: 'success',
-        3: 'danger'
-      }
       const { items, total } = await getTaskList(this.requestForm)
       items.forEach(item => {
         item.avatar = this.avatarList[Math.floor(Math.random() * this.avatarList.length)]
         item.color = _color[item.status]
+        item.percentageColor = this.getColor(item.percentage)
       })
       this.taskList = items
       this.requestForm.total = total
@@ -452,6 +473,19 @@ export default {
     async getDomainList() {
       const { items } = await getDomainList({ page: 1, pageSize: 9999, projectId })
       this.domainList = items
+    },
+    // 获取百分比颜色
+    getColor(percentage) {
+      //  < 20% #909399  <40% #F56C6C < 60% #E6A23C < 80% #409EFF < 100% #67C23A
+      if (percentage <= 20) {
+        return '#909399'
+      } else if (percentage <= 40) {
+        return '#F56C6C'
+      } else if (percentage <= 60) {
+        return '#E6A23C'
+      } else if (percentage <= 80) {
+        return '#409EFF'
+      } else return '#67C23A'
     }
   }
 }
