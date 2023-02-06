@@ -17,3 +17,12 @@ export function getTaskList(data) {
     data
   })
 }
+
+// 修改任务状态
+export function pauseTaskInfo(data) {
+  return request({
+    url: '/task/center/pause',
+    method: 'POST',
+    data
+  })
+}

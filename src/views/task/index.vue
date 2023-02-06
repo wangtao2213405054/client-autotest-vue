@@ -5,6 +5,7 @@
       :visible.sync="dialogVisible"
       width="50%"
       @close="closeDialog"
+      @open="filterPlatform"
     >
       <el-form ref="addFormRef" :model="addForm" label-width="100px">
         <el-form-item
@@ -100,6 +101,7 @@
             v-model="addForm.devices"
             :props="loadDevice"
             clearable
+            placeholder="请选择要指定的执行设备"
             style="width: 100%"
           />
         </el-form-item>
@@ -196,7 +198,57 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
       </span>
     </el-dialog>
-    <el-form>
+    <el-form ref="requestFormRef" :model="requestForm" inline>
+      <el-form-item>
+        <el-input v-model="requestForm.name" placeholder="输入任务名称查询" clearable />
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="requestForm.status" placeholder="选择任务状态查询" clearable>
+          <el-option
+            v-for="item in taskStatusList"
+            :key="item.status"
+            :label="item.label"
+            :value="item.status"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select
+          v-model="requestForm.environmental"
+          placeholder="选择运行环境查询"
+          clearable
+          style="width: 100%"
+          @visible-change="getDomainList"
+        >
+          <el-option
+            v-for="item in domainList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select
+          v-if="platformList.length > 1"
+          v-model="requestForm.platform"
+          placeholder="选择所属平台查询"
+          clearable
+        >
+          <el-option
+            v-for="item in platformList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" @click="queryTaskList">查询</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button icon="el-icon-refresh" @click="refreshRequest">重置</el-button>
+      </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-plus" type="success" @click="addTask">添 加</el-button>
       </el-form-item>
@@ -225,27 +277,42 @@
             <p>
               {{ item['describe'] }}
             </p>
-            <el-descriptions :column="5" :label-style="{'font-weight': 'bold'}">
-              <el-descriptions-item label="所属平台">
-                <div
-                  v-for="items in platformList"
-                  :key="items.id"
+            <el-row :gutter="20">
+              <el-col :span="22">
+                <el-descriptions :column="5" :label-style="{'font-weight': 'bold'}">
+                  <el-descriptions-item label="所属平台">
+                    <div
+                      v-for="items in platformList"
+                      :key="items.id"
+                    >
+                      <span v-if="items.id === item.platform">{{ items.name }}</span>
+                    </div>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="运行环境">{{ item['environmentalName'] }}</el-descriptions-item>
+                  <el-descriptions-item :label="item.status === 0 ? '指定设备' : '执行设备'">{{ item['devicesName'] ? item['devicesName'] : '暂无' }}</el-descriptions-item>
+                  <el-descriptions-item label="用例数量">{{ item['count'] }}</el-descriptions-item>
+                  <el-descriptions-item :label="urlName">
+                    <tooltips :value="item.url" />
+                  </el-descriptions-item>
+                  <el-descriptions-item label="成功用例">{{ item['passCase'] }}</el-descriptions-item>
+                  <el-descriptions-item label="失败用例">{{ item['failCase'] }}</el-descriptions-item>
+                  <el-descriptions-item v-if="item.status === 1" label="测试进度">
+                    <el-progress style="width: 100%" :percentage="item['percentage']" :color="item['percentageColor']" />
+                  </el-descriptions-item>
+                </el-descriptions>
+              </el-col>
+              <el-col :span="2">
+                <el-button
+                  v-if="item.status < 2"
+                  type="text"
+                  icon="el-icon-video-pause"
+                  class="delete-button"
+                  @click.native.stop="pauseTaskInfo(item.id)"
                 >
-                  <span v-if="items.id === item.platform">{{ items.name }}</span>
-                </div>
-              </el-descriptions-item>
-              <el-descriptions-item label="运行环境">{{ item['environmentalName'] }}</el-descriptions-item>
-              <el-descriptions-item :label="item.status === 0 ? '指定设备' : '执行设备'">{{ item['devicesName'] ? item['devicesName'] : '暂无' }}</el-descriptions-item>
-              <el-descriptions-item label="用例数量">{{ item['count'] }}</el-descriptions-item>
-              <el-descriptions-item :label="urlName">
-                <tooltips :value="item.url" />
-              </el-descriptions-item>
-              <el-descriptions-item label="成功用例">{{ item['passCase'] }}</el-descriptions-item>
-              <el-descriptions-item label="失败用例">{{ item['failCase'] }}</el-descriptions-item>
-              <el-descriptions-item v-if="item.status === 1" label="测试进度">
-                <el-progress style="width: 100%" :percentage="item['percentage']" :color="item['percentageColor']" />
-              </el-descriptions-item>
-            </el-descriptions>
+                  终止
+                </el-button>
+              </el-col>
+            </el-row>
           </div>
         </div>
       </div>
@@ -265,7 +332,7 @@
 <script>
 import { getMasterList } from '@/api/devices/master'
 import { getWorkerList } from '@/api/devices/worker'
-import { getTaskList, newTaskInfo } from '@/api/task/center'
+import { getTaskList, newTaskInfo, pauseTaskInfo } from '@/api/task/center'
 import { platform } from '@/utils/localType'
 import { getVersionList } from '@/api/business/version'
 import { getSetList } from '@/api/business/set'
@@ -279,7 +346,8 @@ const _color = {
   0: 'warning',
   1: 'brand',
   2: 'success',
-  3: 'danger'
+  3: 'danger',
+  4: 'info'
 }
 export default {
   name: 'Index',
@@ -332,13 +400,19 @@ export default {
         page: 1,
         pageSize: 20,
         total: null,
-        projectId
+        projectId,
+        name: null,
+        worker: null,
+        status: null,
+        environmental: null,
+        platform: null
       },
       taskStatusList: [
         { status: 0, label: '等待执行', type: 'warning', icon: 'el-icon-time' },
         { status: 1, label: '正在执行', type: '', icon: 'el-icon-loading' },
         { status: 2, label: '执行成功', type: 'success', icon: 'el-icon-circle-check' },
-        { status: 3, label: '执行失败', type: 'danger', icon: 'el-icon-circle-close' }
+        { status: 3, label: '执行失败', type: 'danger', icon: 'el-icon-circle-close' },
+        { status: 4, label: '执行终止', type: 'info', icon: 'el-icon-finished' }
       ],
       versionList: [],
       urlName: '',
@@ -365,6 +439,7 @@ export default {
         if (item.id === data.taskId) {
           item.status = data.status
           item.color = _color[item.status]
+          item.devicesName = data.devicesName
         }
       })
     },
@@ -394,6 +469,7 @@ export default {
     this.urlMessage = mold === 'selenium' ? '请输入本次任务启动执行的域名地址信息' : '请输入本次运行的安装包下载链接'
     this.filterPlatform()
     this.getTaskList()
+    this.getDomainList()
   },
   methods: {
     // 添加任务钩子
@@ -402,7 +478,20 @@ export default {
       this.dialogVisible = true
     },
     // 关闭弹窗钩子
-    closeDialog() {},
+    closeDialog() {
+      this.addForm = {
+        name: null,
+        platform: null,
+        projectId: projectId,
+        version: null,
+        devices: null,
+        url: null,
+        set: [],
+        priority: null,
+        environmental: null
+      }
+      this.$refs.addFormRef.clearValidate()
+    },
     // 提交表单
     submitForm() {
       this.$refs.addFormRef.validate(async(valid) => {
@@ -486,6 +575,34 @@ export default {
       } else if (percentage <= 80) {
         return '#409EFF'
       } else return '#67C23A'
+    },
+    // 终止任务进程
+    async pauseTaskInfo(id) {
+      const clickConfirmResult = await this.$confirm('此操作将停止运行该任务, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (clickConfirmResult !== 'confirm') {
+        return this.$message.info('取消')
+      }
+      await pauseTaskInfo({ id })
+      await this.getTaskList()
+    },
+    // 重置请求信息
+    refreshRequest() {
+      this.requestForm.name = ''
+      this.requestForm.environmental = null
+      this.requestForm.platform = null
+      this.requestForm.status = null
+      this.requestForm.worker = null
+      this.$refs.requestFormRef.resetFields()
+      this.getTaskList()
+    },
+    // 查询任务信息
+    queryTaskList() {
+      this.requestForm.page = 1
+      this.getTaskList()
     }
   }
 }
@@ -513,6 +630,9 @@ export default {
 }
 .danger {
   background-color: rgba(245, 108, 108, 0.05);
+}
+.info {
+  background-color: rgba(144, 147, 153, 0.05);
 }
 ::v-deep .el-descriptions__body {
   background-color: rgba(245, 108, 108, 0);
