@@ -631,19 +631,19 @@ export default {
 }
 
 .warning {
-  background-color: rgba(230, 162, 60, 0.05);
+  background-color: rgba(230, 162, 60, 0.1);
 }
 .brand {
-  background-color: rgba(64, 158, 255, 0.05)
+  background-color: rgba(64, 158, 255, 0.1)
 }
 .success {
-  background-color: rgba(103, 194, 58, 0.05);
+  background-color: rgba(103, 194, 58, 0.1);
 }
 .danger {
-  background-color: rgba(245, 108, 108, 0.05);
+  background-color: rgba(245, 108, 108, 0.1);
 }
 .info {
-  background-color: rgba(144, 147, 153, 0.05);
+  background-color: rgba(144, 147, 153, 0.1);
 }
 ::v-deep .el-descriptions__body {
   background-color: rgba(245, 108, 108, 0);
