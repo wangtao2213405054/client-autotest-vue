@@ -207,9 +207,13 @@
           <el-option
             v-for="item in taskStatusList"
             :key="item.status"
+            :class="item.color"
             :label="item.label"
             :value="item.status"
-          />
+          >
+            <span style="font-size: 13px">{{ item.label }}</span>
+            <span style="float: right; color: #8492a6"><i :class="item.icon" /></span>
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -256,7 +260,7 @@
     <div class="user-activity">
       <div v-for="item in taskList" :key="item.id">
         <div :class="item.color">
-          <div class="post" @click="toReport(item.id)">
+          <div class="post" @click="toReport(item)">
             <div class="user-block">
               <img class="img-circle" alt="" :src="item.avatar + avatarPrefix">
               <span class="username text-muted">{{ item['name'] }}</span>
@@ -313,6 +317,11 @@
                 </el-button>
               </el-col>
             </el-row>
+            <div class="card__arrow">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="15" width="15">
+                <path fill="#fff" d="M13.4697 17.9697C13.1768 18.2626 13.1768 18.7374 13.4697 19.0303C13.7626 19.3232 14.2374 19.3232 14.5303 19.0303L20.3232 13.2374C21.0066 12.554 21.0066 11.446 20.3232 10.7626L14.5303 4.96967C14.2374 4.67678 13.7626 4.67678 13.4697 4.96967C13.1768 5.26256 13.1768 5.73744 13.4697 6.03033L18.6893 11.25H4C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75H18.6893L13.4697 17.9697Z" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -408,11 +417,11 @@ export default {
         platform: null
       },
       taskStatusList: [
-        { status: 0, label: '等待执行', type: 'warning', icon: 'el-icon-time' },
-        { status: 1, label: '正在执行', type: '', icon: 'el-icon-loading' },
-        { status: 2, label: '执行成功', type: 'success', icon: 'el-icon-circle-check' },
-        { status: 3, label: '执行失败', type: 'danger', icon: 'el-icon-circle-close' },
-        { status: 4, label: '执行终止', type: 'info', icon: 'el-icon-finished' }
+        { status: 0, label: '等待执行', type: 'warning', icon: 'el-icon-time', color: 'warning' },
+        { status: 1, label: '正在执行', type: '', icon: 'el-icon-loading', color: 'brand' },
+        { status: 2, label: '执行成功', type: 'success', icon: 'el-icon-circle-check', color: 'success' },
+        { status: 3, label: '执行失败', type: 'danger', icon: 'el-icon-circle-close', color: 'danger' },
+        { status: 4, label: '执行终止', type: 'info', icon: 'el-icon-remove-outline', color: 'info' }
       ],
       versionList: [],
       urlName: '',
@@ -544,7 +553,9 @@ export default {
       })
     },
     // 进入测试报告页面
-    toReport(id) {
+    toReport(item) {
+      const { id, status } = item
+      if (status === 0) return
       this.$router.push({ name: 'TaskReport', params: { id }})
     },
     // 获取版本列表
@@ -678,8 +689,13 @@ export default {
     font-size: 14px;
     border-bottom: 1px solid #d2d6de;
     margin-bottom: 5px;
-    padding-bottom: 15px;
+    //padding-bottom: 15px;
     color: #666;
+    --border-radius: 0.75rem;
+    --primary-color: #409EFF;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    position: relative;
 
     .image {
       width: 100%;
@@ -721,5 +737,35 @@ export default {
 
 .text-muted {
   color: #777;
+}
+
+.post > * + * {
+  margin-top: 1.1em;
+}
+
+.post .card__arrow {
+  position: absolute;
+  background: var(--primary-color);
+  padding: 0.4rem;
+  border-top-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+  bottom: 0;
+  right: 0;
+  transition: 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.post svg {
+  transition: 0.2s;
+}
+
+.post:hover .card__arrow {
+  background: #67C23A;
+}
+
+.post:hover .card__arrow svg {
+  transform: translateX(3px);
 }
 </style>
