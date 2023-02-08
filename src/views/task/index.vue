@@ -7,7 +7,7 @@
       @close="closeDialog"
       @open="filterPlatform"
     >
-      <el-form ref="addFormRef" :model="addForm" label-width="100px">
+      <el-form ref="addFormRef" :model="addForm" :rules="urlRules" label-width="100px">
         <el-form-item
           label="任务名称"
           prop="name"
@@ -65,9 +65,6 @@
           v-if="addForm.platform"
           :label="urlName"
           prop="url"
-          :rules="[
-            { required: true, message: urlMessage, trigger: 'blur' }
-          ]"
         >
           <span slot="label">
             {{ urlName }}
@@ -364,7 +361,21 @@ export default {
     tooltips
   },
   data() {
+    // 验证链接格式
+    const validateUrl = (rule, value, callback) => {
+      const re = /^(http|https|ftp|file|rtmp|rtsp):\/\/([a-zA-Z0-9-_])/
+      if (!re.test(value)) {
+        callback(new Error(mold === 'selenium' ? '请输入本次任务启动执行的域名地址信息' : '请输入本次运行的安装包下载链接'))
+      } else {
+        callback()
+      }
+    }
     return {
+      urlRules: {
+        url: [
+          { required: true, trigger: 'blur', validator: validateUrl }
+        ]
+      },
       avatarPrefix,
       addForm: {
         name: null,
