@@ -2,8 +2,9 @@
 import Vue from 'vue'
 import VueSocketIO from 'vue-socket.io'
 import store from '@/store'
-// import { getHostIp } from '@/api/admin/message' // 获取后端动态ip地址
+import { getSocketDomain } from '@/api/conf/socketDomain'
 import SocketIo from 'socket.io-client'
+
 let socketIo, socketListener, socketEmitter
 if (!getToken()) {
   const timer = setInterval(() => {
@@ -21,18 +22,12 @@ function getToken() { // 获取登录标识
 }
 
 async function initSocket(token) {
-  // const userId = store.getters.userInfo.userId // 获取登录标识---请修改为自己项目用户id
-  // const ipResult = await getHostIp()
-  // if (ipResult.code !== 0) return
-  // const { ip, port } = ipResult.data
-  // const protocol = window.location.protocol
-  // const socketUrl = `${protocol}//${ip}:${port}?userId=${userId}`
-  // console.log('socketUrl', socketUrl)
-  console.log(token, 'this.is test')
-  const socketUrl = 'http://127.0.0.1:5000'
+  const { domain } = await getSocketDomain()
+  if (!domain) return
+  console.log(domain, 'socketUrl')
   const socket = new VueSocketIO({
     debug: process.env.NODE_ENV !== 'production',
-    connection: SocketIo(socketUrl, {
+    connection: SocketIo(domain, {
       extraHeaders: { token: token },
       autoConnect: true, // 已通过验证，全局使用可默认打开，组件内使用则默认关闭，使用时在打开
       // mac 下 如果为1秒时，会出现跨域问题, 重连会失败, 在 python-socket io 库中也出现了此问题, 经过调试后发现当重连过于频繁时,
