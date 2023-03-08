@@ -1,4 +1,4 @@
-import { dataType, booleanSelect } from '@/utils/localType'
+import { dataType, booleanSelect, operationSelect } from '@/utils/localType'
 import { getElementList } from '@/api/conf/element'
 
 export async function getInlaySelectInfo(model) {
@@ -23,6 +23,8 @@ export async function getInlaySelectInfo(model) {
     for (let i = 0; i < 20; i++) {
       data.push({ id: i, name: '第 ' + (i + 1) + ' 个元素' })
     }
+  } else if (model === 'Operation') {
+    data = operationSelect
   }
   return data
 }

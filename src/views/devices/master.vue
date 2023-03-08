@@ -34,6 +34,22 @@
           </el-select>
         </el-form-item>
         <el-form-item
+          label="日志等级"
+          prop="logging"
+          :rules="[
+            { required: true, message: '请选择日志等级', trigger: 'blur' }
+          ]"
+        >
+          <el-select v-model="addForm.logging" placeholder="请选择日志等级" clearable>
+            <el-option
+              v-for="item in loggingList"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
           label="最大进程"
           prop="maxContext"
           :rules="[
@@ -194,6 +210,7 @@ import {
   statusMasterRoom
 } from '@/api/devices/master'
 import clip from '@/utils/clipboard'
+import { loggingInfo } from '@/utils/localType'
 
 export default {
   name: 'Driver',
@@ -208,7 +225,8 @@ export default {
         maxContext: 4,
         projectId: null,
         status: true,
-        token: null
+        token: null,
+        logging: 'INFO'
       },
       roleList: [],
       projectList: [],
@@ -224,7 +242,8 @@ export default {
       statusList: [
         { key: true, label: '启用' },
         { key: false, label: '禁用' }
-      ]
+      ],
+      loggingList: loggingInfo
     }
   },
   created() {
@@ -286,7 +305,8 @@ export default {
         maxContext: 4,
         projectId: null,
         status: true,
-        token: null
+        token: null,
+        logging: 'INFO'
       }
       this.$refs.addFormRef.clearValidate()
     },

@@ -46,6 +46,22 @@
           <el-input v-model="addForm.desc" placeholder="请输入设备描述" clearable type="textarea" :rows="3" />
         </el-form-item>
         <el-form-item
+          label="日志等级"
+          prop="logging"
+          :rules="[
+            { required: true, message: '请选择日志等级', trigger: 'blur' }
+          ]"
+        >
+          <el-select v-model="addForm.logging" placeholder="请选择日志等级" clearable>
+            <el-option
+              v-for="item in loggingList"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
           label="熔断阈值"
           prop="blocker"
           :rules="[
@@ -239,6 +255,7 @@
 import { getCapabilitiesList } from '@/api/devices/capabilities'
 import { getMasterList } from '@/api/devices/master'
 import { deleteWorkerInfo, editWorkerInfo, editWorkerSwitch, getWorkerList } from '@/api/devices/worker'
+import { loggingInfo } from '@/utils/localType'
 
 export default {
   data() {
@@ -260,7 +277,8 @@ export default {
         desc: null,
         blocker: 3,
         mapping: [],
-        switch: true
+        switch: true,
+        logging: 'INFO'
       },
       mappingList: [],
       setMappingList: [],
@@ -272,7 +290,8 @@ export default {
         { type: 'danger', label: '异常', key: 2 },
         { type: 'info', label: '停止', key: 3 },
         { type: 'info', label: '离线', key: 4 }
-      ]
+      ],
+      loggingList: loggingInfo
     }
   },
   created() {
@@ -291,7 +310,8 @@ export default {
         desc: null,
         blocker: 3,
         mapping: [],
-        switch: true
+        switch: true,
+        logging: 'INFO'
       }
       this.$refs.addFormRef.clearValidate()
     },

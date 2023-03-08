@@ -28,7 +28,8 @@ export const selectType = [
   { key: 'Boolean', value: '布尔选择器' },
   { key: 'Element', value: '元素选择器' },
   { key: 'Api', value: '接口选择器' },
-  { key: 'ElementIndex', value: '元素位置选择器' }
+  { key: 'ElementIndex', value: '元素位置选择器' },
+  { key: 'Operation', value: '运算符选择器' }
 ]
 
 export const dataType = [
@@ -44,4 +45,23 @@ export const dataType = [
 export const booleanSelect = [
   { id: true, name: 'True' },
   { id: false, name: 'False' }
+]
+
+export const loggingInfo = [
+  { key: 'DEBUG', value: 'DEBUG' },
+  { key: 'INFO', value: 'INFO' },
+  { key: 'ERROR', value: 'ERROR' },
+  { key: 'WARNING', value: 'WARNING' },
+  { key: 'CRITICAL', value: 'CRITICAL' }
+]
+
+export const operationSelect = [
+  { id: '=', name: '等于' },
+  { id: '!=', name: '不等于' },
+  { id: '>', name: '大于' },
+  { id: '>=', name: '大于等于' },
+  { id: '<', name: '小于' },
+  { id: '<=', name: '小于等于' },
+  { id: 'in', name: '在...里面' },
+  { id: 'out', name: '不在...里面' }
 ]

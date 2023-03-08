@@ -1,5 +1,6 @@
 module.exports = {
   title: '客户端自动化平台',
+  path: '/',
 
   /**
    * @type {boolean} true | false
