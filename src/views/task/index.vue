@@ -79,6 +79,54 @@
           </span>
           <el-input v-model="addForm.url" :placeholder="urlMessage" clearable />
         </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item
+              v-if="addForm.platform === 'web'"
+              label="并发执行"
+            >
+              <span slot="label">
+                并发执行
+                <el-tooltip
+                  effect="dark"
+                  trigger="click"
+                  content="通过此选项可以多进程执行测试用例, 目前只有 Web 端支持此方法"
+                  placement="top"
+                >
+                  <i class="el-icon-info" />
+                </el-tooltip>
+              </span>
+              <el-switch
+                v-model="addForm.concurrent"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item
+              v-if="addForm.concurrent"
+              label="进程数量"
+            >
+              <span slot="label">
+                进程数量
+                <el-tooltip
+                  effect="dark"
+                  trigger="click"
+                  content="通过此选项可控制设备启动的进程数量, 请根据 CPU 来确定要启动的进程数, 最多八个进程, 最少有两个进程"
+                  placement="top"
+                >
+                  <i class="el-icon-info" />
+                </el-tooltip>
+              </span>
+              <el-input-number
+                v-model="addForm.processes"
+                :min="2"
+                :max="8"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item
           v-if="addForm.platform"
           label="指定设备"
@@ -386,7 +434,9 @@ export default {
         url: null,
         set: [],
         priority: null,
-        environmental: null
+        environmental: null,
+        concurrent: false,
+        processes: 3
       },
       dialogVisible: false,
       title: '添加任务',
@@ -456,10 +506,12 @@ export default {
     // 更新页面状态
     taskStatus(data) {
       this.taskList.forEach(item => {
-        if (item.id === data.taskId) {
+        if (item.id === data.id) {
           item.status = data.status
           item.color = _color[item.status]
           item.devicesName = data.devicesName
+          item.startTime = data.startTime
+          item.endTime = data.endTime
         }
       })
     },
@@ -508,7 +560,9 @@ export default {
         url: null,
         set: [],
         priority: null,
-        environmental: null
+        environmental: null,
+        concurrent: false,
+        processes: 3
       }
       this.$refs.addFormRef.clearValidate()
     },

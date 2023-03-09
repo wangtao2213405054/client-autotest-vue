@@ -531,6 +531,7 @@ export default {
           const flag = this.$refs.steps.validate()
           if (flag) {
             const caseInfo = await editCaseInfo(this.addForm)
+            console.log(caseInfo)
             this.$message.success('保存成功')
             this.$emit('save', caseInfo, !!this.addForm.id)
             this.addForm = caseInfo

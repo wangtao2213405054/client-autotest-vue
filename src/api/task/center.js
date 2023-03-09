@@ -26,3 +26,12 @@ export function pauseTaskInfo(data) {
     data
   })
 }
+
+// 获取任务信息
+export function getTaskInfo(data) {
+  return request({
+    url: '/task/center/info',
+    method: 'POST',
+    data
+  })
+}
