@@ -6,10 +6,10 @@ export const platform = [
 ]
 
 export const priority = [
-  { id: 0, name: 'P0' },
-  { id: 1, name: 'P1' },
-  { id: 2, name: 'P2' },
-  { id: 3, name: 'P3' }
+  { id: 0, name: 'P0', type: 'danger' },
+  { id: 1, name: 'P1', type: 'warning' },
+  { id: 2, name: 'P2', type: 'success' },
+  { id: 3, name: 'P3', type: '' }
 ]
 
 export const specials = [
@@ -64,4 +64,10 @@ export const operationSelect = [
   { id: '<=', name: '小于等于' },
   { id: 'in', name: '在...里面' },
   { id: 'out', name: '不在...里面' }
+]
+
+export const runCaseStatusList = [
+  { id: 0, name: '失败', type: 'danger' },
+  { id: 1, name: '成功', type: 'success' },
+  { id: 2, name: '跳过', type: 'warning' }
 ]
