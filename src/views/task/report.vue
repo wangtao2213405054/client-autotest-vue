@@ -34,7 +34,7 @@
       header-row-class-name="table-header-style"
       :data="reportList"
       stripe
-      style="width: 100%"
+      style="width: 100%; margin-top: 20px"
       highlight-current-row
       @row-click="openDrawer"
     >
@@ -67,7 +67,7 @@
       </el-table-column>
     </el-table>
     <el-drawer
-      title="我是标题"
+      title="用例详情"
       :visible.sync="drawer"
       :with-header="false"
       size="70%"
@@ -142,6 +142,8 @@
           <el-image
             class="borderDiv"
             :src="caseInfo.gif"
+            :preview-src-list="[caseInfo.gif]"
+            style="width: 100%; height: 350px"
           >
             <div slot="placeholder" class="image-slot">
               加载中<span class="dot">...</span>
@@ -167,9 +169,14 @@
           <div class="case-font-size">用例截图</div>
           <el-image
             class="borderDiv"
+            style="width: 100%; height: 350px"
             :src="caseInfo.images[0]"
             :preview-src-list="caseInfo.images"
-          />
+          >
+            <div slot="placeholder" class="image-slot">
+              加载中<span class="dot">...</span>
+            </div>
+          </el-image>
         </div>
         <div v-if="caseInfo['errorInfo']">
           <el-divider />
@@ -197,6 +204,16 @@
         </div>
       </div>
     </el-drawer>
+    <el-pagination
+      style="text-align: right; margin-top: 15px"
+      background
+      :page-size="requestForm.size"
+      layout="total, sizes, prev, pager, next"
+      :total="requestForm.total"
+      :page-sizes="[20, 50, 100, 500]"
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
+    />
   </el-card>
 </template>
 
@@ -256,6 +273,28 @@ export default {
     openDrawer(row) {
       this.drawer = true
       this.caseInfo = row
+    },
+    // 页码改变
+    handleCurrentChange(newPage) {
+      this.requestForm.page = newPage
+      this.getReportList()
+      // 返回顶部
+      window.scrollTo({
+        left: 0,
+        top: 0,
+        behavior: 'smooth'
+      })
+    },
+    // 大小改变
+    handleSizeChange(newSize) {
+      this.requestForm.pageSize = newSize
+      this.getReportList()
+      // 返回顶部
+      window.scrollTo({
+        left: 0,
+        top: 0,
+        behavior: 'smooth'
+      })
     }
   },
   sockets: {
