@@ -523,7 +523,7 @@ export default {
     // 页码改变
     handleCurrentChange(newPage) {
       this.requestForm.page = newPage
-      this.getElementList()
+      this.getEventList()
       // 返回顶部
       window.scrollTo({
         left: 0,
