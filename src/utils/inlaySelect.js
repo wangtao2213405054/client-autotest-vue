@@ -12,7 +12,7 @@ export async function getInlaySelectInfo(model) {
   } else if (model === 'Element') {
     const request = {
       page: 1,
-      size: 9999,
+      pageSize: 9999,
       platform: localStorage.getItem('mold')
     }
     const { items } = await getElementList(request)
