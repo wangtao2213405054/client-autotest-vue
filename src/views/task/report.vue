@@ -352,10 +352,11 @@ export default {
             name: '结果统计',
             type: 'pie',
             radius: '70%',
-            color: ['#67C23A', '#F56C6C', '#E6A23C'],
+            color: ['#67C23A', '#F56C6C', '#909399', '#E6A23C'],
             data: [
               { value: 0, name: '成功' },
-              { value: 0, name: '失败' }
+              { value: 0, name: '失败' },
+              { value: 0, name: '未执行' }
             ]
           }
         ]
@@ -405,6 +406,7 @@ export default {
       this.taskInfo['percentageColor'] = getColor(this.taskInfo['percentage'])
       this.chartInfo.series[0].data[0].value = this.taskInfo['passCase']
       this.chartInfo.series[0].data[1].value = this.taskInfo['failCase']
+      this.chartInfo.series[0].data[2].value = this.taskInfo['count'] - (this.taskInfo['failCase'] + this.taskInfo['passCase'])
       this.chart.setOption(this.chartInfo)
     },
     // 打开抽屉
