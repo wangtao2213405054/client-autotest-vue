@@ -132,7 +132,7 @@
       <el-table-column prop="caseId" label="编号" width="80px" align="center" />
       <el-table-column prop="name" label="用例名称" width="300px" show-overflow-tooltip />
       <el-table-column prop="priority" label="优先级" width="80px" align="center" />
-      <el-table-column prop="module" label="所属模块" width="100px" align="center" />
+      <el-table-column prop="module" label="所属模块" width="150px" align="center" show-overflow-tooltip />
       <el-table-column prop="details" label="用例描述" show-overflow-tooltip />
       <el-table-column prop="duration" label="执行时长" width="80px" align="center">
         <template v-slot="scope">
