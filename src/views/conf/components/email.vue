@@ -6,7 +6,7 @@
         <span style="color: #909399; margin-left: 10px">Email</span>
       </span>
       <el-switch
-        v-model="emailForm.state"
+        v-model="emailForm.status"
         style="float: right; padding: 3px 0"
         active-color="#13ce66"
         inactive-color="#ff4949"
@@ -114,7 +114,7 @@ export default {
         password: null,
         title: null,
         receivers: [],
-        state: false,
+        status: false,
         projectId: localStorage.getItem('projectId')
       },
       emailFormRules: {
@@ -176,10 +176,10 @@ export default {
     },
     async updateEmailSwitch(bool) {
       if (this.emailForm.id) {
-        await updateEmailSwitch({ state: bool, id: this.emailForm.id })
+        await updateEmailSwitch({ status: bool, id: this.emailForm.id })
       } else {
         this.$message.warning('请先配置邮箱再使用开关')
-        this.emailForm.state = false
+        this.emailForm.status = false
       }
     },
     resetForm() {

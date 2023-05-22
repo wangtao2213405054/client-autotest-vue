@@ -2,45 +2,136 @@
   <el-card>
     <div>
       <el-row :gutter="20">
-        <el-col :span="6">
-          <el-statistic title="任务名称">
-            <template slot="formatter"> {{ taskInfo.name }} </template>
-          </el-statistic>
+        <el-col :span="16">
+          <el-descriptions class="margin-top" title="任务信息" :column="2" border>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-s-flag" />
+                任务名称
+              </template>
+              {{ taskInfo.name }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-mobile-phone" />
+                执行环境
+              </template>
+              {{ taskInfo['environmentalName'] }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-location-outline" />
+                执行设备
+              </template>
+              {{ taskInfo['devicesName'] }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-tickets" />
+                执行平台
+              </template>
+              <div
+                v-for="item in platformList"
+                :key="item.id"
+              >
+                <span v-if="taskInfo['platform'] === item.id">{{ item.name }}</span>
+              </div>
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-discover" />
+                任务状态
+              </template>
+              <span
+                v-for="status in taskStatusList"
+                :key="status.status"
+                class="mold"
+              >
+                <el-tag v-if="taskInfo.status === status.status" :disable-transitions="true" :type="status.type" effect="dark">
+                  <i :class="status.icon" />
+                  {{ status.label }}
+                </el-tag>
+              </span>
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-coin" />
+                用例总数
+              </template>
+              {{ taskInfo['count'] }}
+            </el-descriptions-item>
+            <el-descriptions-item :content-style="{'background': '#E1F3D8'}">
+              <template slot="label">
+                <i class="el-icon-success" />
+                成功数
+              </template>
+              {{ taskInfo['passCase'] }}
+            </el-descriptions-item>
+            <el-descriptions-item :content-style="{'background': '#FDE2E2'}">
+              <template slot="label">
+                <i class="el-icon-error" />
+                失败数
+              </template>
+              {{ taskInfo['failCase'] }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-timer" />
+                开始时间
+              </template>
+              {{ taskInfo['startTime'] }}
+            </el-descriptions-item>
+            <el-descriptions-item v-if="taskInfo['endTime']">
+              <template slot="label">
+                <i class="el-icon-time" />
+                结束时间
+              </template>
+              {{ taskInfo['endTime'] }}
+            </el-descriptions-item>
+            <el-descriptions-item v-if="taskInfo['concurrent']">
+              <template slot="label">
+                <i class="el-icon-unlock" />
+                进程数量
+              </template>
+              {{ taskInfo['processes'] }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template slot="label">
+                <i class="el-icon-user-solid" />
+                创建人
+              </template>
+              {{ taskInfo['username'] }}
+            </el-descriptions-item>
+          </el-descriptions>
         </el-col>
-        <el-col :span="6">
-          <div>
-            <el-statistic title="执行环境">
-              <template slot="formatter"> {{ taskInfo['environmentalName'] }} </template>
-            </el-statistic>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div>
-            <el-statistic title="执行设备">
-              <template slot="formatter"> {{ taskInfo['devicesName'] }} </template>
-            </el-statistic>
-          </div>
-        </el-col>
-        <el-col :span="6">
-          <div>
-            <el-statistic title="执行平台">
-              <template slot="formatter"> {{ taskInfo['platform'] }} </template>
-            </el-statistic>
-          </div>
+        <el-col :span="8">
+          <div id="diagram" class="container" />
         </el-col>
       </el-row>
+      <el-descriptions style="margin-top: 20px" :colon="false">
+        <el-descriptions-item>
+          <template slot="label">
+            <span style="font-size: 16px; font-weight: bold; color: #303133">执行进度:</span>
+          </template>
+          <el-progress
+            :text-inside="true"
+            :stroke-width="24"
+            style="width: 100%"
+            :percentage="taskInfo['percentage']"
+            :color="taskInfo['percentageColor']"
+          />
+        </el-descriptions-item>
+      </el-descriptions>
     </div>
     <el-table
       header-row-class-name="table-header-style"
       :data="reportList"
-      stripe
       style="width: 100%; margin-top: 20px"
-      highlight-current-row
       @row-click="openDrawer"
     >
       <el-table-column prop="caseId" label="编号" width="80px" align="center" />
       <el-table-column prop="name" label="用例名称" width="300px" show-overflow-tooltip />
-      <el-table-column prop="priority" label="优先级" width="60px" align="center" />
+      <el-table-column prop="priority" label="优先级" width="80px" align="center" />
       <el-table-column prop="module" label="所属模块" width="100px" align="center" />
       <el-table-column prop="details" label="用例描述" show-overflow-tooltip />
       <el-table-column prop="duration" label="执行时长" width="80px" align="center">
@@ -220,8 +311,9 @@
 <script>
 import { getReportList } from '@/api/task/report'
 import { getTaskInfo } from '@/api/task/center'
-import { runCaseStatusList, priority } from '@/utils/localType'
+import { runCaseStatusList, priority, taskStatus, platform, getColor } from '@/utils/localType'
 import CodeRead from 'vue-code-diff'
+import echarts from 'echarts'
 export default {
   components: {
     CodeRead
@@ -243,20 +335,58 @@ export default {
         id: 0,
         images: []
       },
-      priorityList: priority
+      priorityList: priority,
+      chart: null,
+      taskStatusList: taskStatus,
+      platformList: platform,
+      chartInfo: {
+        tooltip: {
+          trigger: 'item'
+        },
+        legend: {
+          bottom: '0%',
+          left: 'center'
+        },
+        series: [
+          {
+            name: '结果统计',
+            type: 'pie',
+            radius: '70%',
+            color: ['#67C23A', '#F56C6C', '#E6A23C'],
+            data: [
+              { value: 0, name: '成功' },
+              { value: 0, name: '失败' }
+            ]
+          }
+        ]
+      }
     }
   },
-  created() {
+  async mounted() {
     this.roomId = 'taskReport' + this.$route.params.id
-    this.getTaskInfo()
+    this.initChart()
+    await this.getTaskInfo()
+    await this.getReportList()
+    this.joinTaskRoom()
   },
-  mounted() {
-    this.getReportList()
-    this.joinDeviceRoom()
+  // 页面销毁后的钩子
+  beforeDestroy() {
+    if (!this.chart) {
+      return
+    }
+    this.chart.dispose()
+    this.chart = null
+    // 退出房间
+    this.$socket.emit('leaveRoom', { roomId: this.roomId })
   },
   methods: {
+    // 初始化表格
+    initChart() {
+      const chartDom = document.getElementById('diagram')
+      this.chart = echarts.init(chartDom)
+    },
     // 加入任务房间
-    joinDeviceRoom() {
+    joinTaskRoom() {
       this.$socket.emit('joinRoom', { roomId: this.roomId })
     },
     // 获取测试报告列表
@@ -268,6 +398,14 @@ export default {
     // 获取任务信息
     async getTaskInfo() {
       this.taskInfo = await getTaskInfo({ id: JSON.parse(this.$route.params.id) })
+      this.updateChart()
+    },
+    // 更新图片和进度条颜色
+    updateChart() {
+      this.taskInfo['percentageColor'] = getColor(this.taskInfo['percentage'])
+      this.chartInfo.series[0].data[0].value = this.taskInfo['passCase']
+      this.chartInfo.series[0].data[1].value = this.taskInfo['failCase']
+      this.chart.setOption(this.chartInfo)
     },
     // 打开抽屉
     openDrawer(row) {
@@ -298,8 +436,27 @@ export default {
     }
   },
   sockets: {
+    // 任务详情信息
     taskReportInfo(data) {
+      if (data.taskId !== this.taskInfo.id) return
+      // 更新任务信息
+      this.taskInfo.passCase = data.passCase
+      this.taskInfo.failCase = data.failCase
+      this.taskInfo.percentage = data.percentage
+      this.taskInfo.status = data['taskStatus']
+      // 更新报告详情
+      this.updateChart()
       this.reportList.unshift(data)
+      if (this.reportList.length > this.requestForm.pageSize) {
+        this.reportList.pop()
+      }
+      this.requestForm.total += 1
+    },
+    // 任务状态
+    taskStatus(data) {
+      if (data.id !== this.taskInfo.id) return
+      this.taskInfo.status = data.status
+      this.taskInfo.endTime = data.endTime
     }
   }
 }
@@ -333,5 +490,13 @@ export default {
   border-color: #DCDFE6;
   border-width: 1px;
   background-color: #FFFFFF
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 40vh;
+  width: 100%;
 }
 </style>

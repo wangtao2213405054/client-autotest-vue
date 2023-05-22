@@ -94,7 +94,7 @@
     <el-pagination
       style="text-align: right; margin-top: 15px"
       background
-      :page-size="requestForm.size"
+      :page-size="requestForm.pageSize"
       layout="total, prev, pager, next"
       :total="requestForm.total"
       @current-change="handleCurrentChange"
@@ -134,7 +134,7 @@ export default {
       elementList: [],
       requestForm: {
         page: 1,
-        size: 20,
+        pageSize: 20,
         total: null,
         platform: localStorage.getItem('mold'),
         name: null,

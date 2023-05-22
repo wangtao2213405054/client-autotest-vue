@@ -387,7 +387,7 @@
 import { getMasterList } from '@/api/devices/master'
 import { getWorkerList } from '@/api/devices/worker'
 import { getTaskList, newTaskInfo, pauseTaskInfo } from '@/api/task/center'
-import { platform } from '@/utils/localType'
+import { platform, taskStatus, getColor } from '@/utils/localType'
 import { getVersionList } from '@/api/business/version'
 import { getSetList } from '@/api/business/set'
 import { getDomainList } from '@/api/mock/domain'
@@ -477,13 +477,7 @@ export default {
         environmental: null,
         platform: null
       },
-      taskStatusList: [
-        { status: 0, label: '等待执行', type: 'warning', icon: 'el-icon-time', color: 'warning' },
-        { status: 1, label: '正在执行', type: '', icon: 'el-icon-loading', color: 'brand' },
-        { status: 2, label: '执行成功', type: 'success', icon: 'el-icon-circle-check', color: 'success' },
-        { status: 3, label: '执行失败', type: 'danger', icon: 'el-icon-circle-close', color: 'danger' },
-        { status: 4, label: '执行终止', type: 'info', icon: 'el-icon-remove-outline', color: 'info' }
-      ],
+      taskStatusList: taskStatus,
       versionList: [],
       urlName: '',
       urlMessage: '',
@@ -522,7 +516,7 @@ export default {
           item.passCase = data.pass
           item.failCase = data.fail
           item.percentage = data.percentage
-          item.percentageColor = this.getColor(data.percentage)
+          item.percentageColor = getColor(data.percentage)
         }
       })
     }
@@ -601,7 +595,7 @@ export default {
       items.forEach(item => {
         item.avatar = this.avatarList[Math.floor(Math.random() * this.avatarList.length)]
         item.color = _color[item.status]
-        item.percentageColor = this.getColor(item.percentage)
+        item.percentageColor = getColor(item.percentage)
       })
       this.taskList = items
       this.requestForm.total = total
@@ -638,19 +632,6 @@ export default {
     async getDomainList() {
       const { items } = await getDomainList({ page: 1, pageSize: 9999, projectId })
       this.domainList = items
-    },
-    // 获取百分比颜色
-    getColor(percentage) {
-      //  < 20% #909399  <40% #F56C6C < 60% #E6A23C < 80% #409EFF < 100% #67C23A
-      if (percentage <= 20) {
-        return '#909399'
-      } else if (percentage <= 40) {
-        return '#F56C6C'
-      } else if (percentage <= 60) {
-        return '#E6A23C'
-      } else if (percentage <= 80) {
-        return '#409EFF'
-      } else return '#67C23A'
     },
     // 终止任务进程
     async pauseTaskInfo(id) {
