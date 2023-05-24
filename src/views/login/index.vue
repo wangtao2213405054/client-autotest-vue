@@ -150,7 +150,7 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
-  background-image: url("../../assets/94628268331f4a9b92c0c36f5f4b196b.jpg");
+  background-image: url("../../assets/background.jpg");
   background-size: cover;
   background-position: center;
   position: relative;

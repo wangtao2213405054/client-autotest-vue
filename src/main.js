@@ -43,6 +43,10 @@ Vue.use(Element, {
   size: Cookies.get('size') || 'small' // 设置 element 组件全局大小
   // locale: enLang // 如果使用中文，无需设置，请删除
 })
+
+// 修改 loading 动画
+import './styles/loading.scss'
+
 // json 插件
 Vue.use(CodeEditor)
 
