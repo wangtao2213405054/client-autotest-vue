@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="apiLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -129,7 +129,8 @@ export default {
         } catch (e) {
           callback('请输入正确的JSON结构')
         }
-      }
+      },
+      apiLoading: true
     }
   },
   created() {
@@ -210,9 +211,11 @@ export default {
     },
     // 获取接口列表
     async getApiList() {
+      this.apiLoading = true
       const { items, total } = await getApiList(this.requestForm)
       this.apiList = items
       this.requestForm.total = total
+      this.apiLoading = false
     }
   }
 }

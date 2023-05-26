@@ -57,7 +57,7 @@
         <el-button type="primary" @click="editRoleInfo">确 定</el-button>
       </span>
     </el-dialog>
-    <el-table :data="roleList" style="width: 100%" size="small" header-row-class-name="table-header-style">
+    <el-table v-loading="roleLoading" :data="roleList" style="width: 100%" size="small" header-row-class-name="table-header-style">
       <el-table-column type="index" label="编号" align="center" />
       <el-table-column prop="name" label="角色名称" align="center" />
       <el-table-column prop="identifier" label="标识符" align="center" />
@@ -116,7 +116,8 @@ export default {
       roleList: [],
       strictly: false,
       expand: false,
-      checked: false
+      checked: false,
+      roleLoading: true
     }
   },
   created() {
@@ -151,9 +152,11 @@ export default {
     },
     // 获取角色列表
     async getRoleList() {
+      this.roleLoading = true
       const { items, total } = await getRoleList(this.requestForm)
       this.roleList = items
       this.requestForm.total = total
+      this.roleLoading = false
     },
     // 页码改变
     handleCurrentChange(newPage) {

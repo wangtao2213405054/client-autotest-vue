@@ -1,5 +1,5 @@
 <template>
-  <div class="user-activity">
+  <div v-loading="projectLoading" class="user-activity">
     <el-dialog
       :title="title"
       :visible.sync="visibleBool"
@@ -107,7 +107,8 @@ export default {
         name: [{ required: true, message: '请输入正确的项目名称', trigger: 'blur' }, { min: 2, max: 15, message: '长度在 2 到 15 个字符', trigger: 'blur' }],
         describe: [{ required: true, message: '请输入正确的项目背景', trigger: 'blur' }, { min: 5, max: 512, message: '长度在 5 到 512 个字符', trigger: 'blur' }]
       },
-      title: '创建项目'
+      title: '创建项目',
+      projectLoading: true
     }
   },
   watch: {
@@ -128,9 +129,11 @@ export default {
     },
     // 获取项目列表
     async getProjectList() {
+      this.projectLoading = true
       const { items, total } = await getProjectList(this.requestForm)
       this.projectList = items
       this.requestForm.total = total
+      this.projectLoading = false
     },
     // 页码改变
     handleCurrentChange(newPage) {

@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="hover">
+  <el-card v-loading="emailLoading" shadow="hover">
     <div slot="header" class="clearfix">
       <span style="float: left">
         <strong>邮件配置</strong>
@@ -134,7 +134,8 @@ export default {
         receivers: [
           { required: true, message: '请输入或选择邮件接收人', trigger: 'change' }
         ]
-      }
+      },
+      emailLoading: true
     }
   },
   created() {
@@ -163,7 +164,9 @@ export default {
     },
     // 获取邮件信息
     async getEmailInfo() {
+      this.emailLoading = true
       this.emailForm = await getEmailInfo({ projectId: localStorage.getItem('projectId') })
+      this.emailLoading = false
     },
     saveMessage() {
       this.$refs.emailFormRef.validate(async(valid) => {

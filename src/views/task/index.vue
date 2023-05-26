@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="taskPageLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -493,7 +493,8 @@ export default {
         require('@/icons/png/rabbit.png'), require('@/icons/png/dragon.png'), require('@/icons/png/snake.png'),
         require('@/icons/png/horse.png'), require('@/icons/png/sheep.png'), require('@/icons/png/monkey.png'),
         require('@/icons/png/chicken.png'), require('@/icons/png/dog.png'), require('@/icons/png/pig.png')
-      ]
+      ],
+      taskPageLoading: true
     }
   },
   sockets: {
@@ -534,8 +535,8 @@ export default {
     this.urlName = mold === 'selenium' ? '启动链接' : '下载链接'
     this.urlMessage = mold === 'selenium' ? '请输入本次任务启动执行的域名地址信息' : '请输入本次运行的安装包下载链接'
     this.filterPlatform()
-    this.getTaskList()
     this.getDomainList()
+    this.getTaskList()
   },
   methods: {
     // 添加任务钩子
@@ -591,6 +592,7 @@ export default {
     },
     // 获取任务列表列表
     async getTaskList() {
+      this.taskPageLoading = true
       const { items, total } = await getTaskList(this.requestForm)
       items.forEach(item => {
         item.avatar = this.avatarList[Math.floor(Math.random() * this.avatarList.length)]
@@ -599,6 +601,7 @@ export default {
       })
       this.taskList = items
       this.requestForm.total = total
+      this.taskPageLoading = false
     },
     // 页码改变
     handleCurrentChange(newPage) {

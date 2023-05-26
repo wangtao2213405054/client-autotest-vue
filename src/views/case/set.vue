@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="setLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -170,7 +170,8 @@ export default {
         label: 'name',
         multiple: true
         // checkStrictly: true
-      }
+      },
+      setLoading: true
     }
   },
   async created() {
@@ -221,9 +222,11 @@ export default {
     },
     // 获取集合列表
     async getSetList() {
+      this.setLoading = true
       const { items, total } = await getSetList(this.requestForm)
       this.setList = items
       this.requestForm.total = total
+      this.setLoading = false
     },
     // 页码改变
     handleCurrentChange(newPage) {

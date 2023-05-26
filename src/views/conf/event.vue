@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="eventLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -410,7 +410,8 @@ export default {
         { label: 'exclusive', title: '项目专用', desc: '此事件仅可在此项目中使用' },
         { label: 'selenium', title: 'Web项目', desc: '此事件属于所有 Web 端项目' },
         { label: 'appium', title: 'App项目', desc: '此事件属于所有 App 端项目' }
-      ]
+      ],
+      eventLoading: true
     }
   },
   created() {
@@ -482,9 +483,11 @@ export default {
       })
     },
     async getEventList() {
+      this.eventLoading = true
       const { total, items } = await getEventList(this.requestForm)
       this.eventList = items
       this.requestForm.total = total
+      this.eventLoading = false
     },
     updateButton(row) {
       this.addForm = row

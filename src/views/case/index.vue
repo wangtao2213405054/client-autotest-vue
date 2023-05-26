@@ -23,7 +23,7 @@
         <el-button type="primary" @click="editModulesData">确 定</el-button>
       </span>
     </el-dialog>
-    <el-col :span="7" :xs="26">
+    <el-col v-loading="moduleLoading" :span="7" :xs="26">
       <el-scrollbar class="api-content">
         <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px">
           <el-input
@@ -136,7 +136,8 @@ export default {
       labelName: '',
       modulesList: [],
       queryId: null,
-      treeClickCount: 0
+      treeClickCount: 0,
+      moduleLoading: true
     }
   },
   watch: {
@@ -255,7 +256,9 @@ export default {
     // 懒加载
     async loadNode(node, resolve) {
       if (node.level === 0) {
+        this.moduleLoading = true
         const data = await this.getModuleNodeList(0)
+        this.moduleLoading = false
         this.modulesList = data
         return resolve(data)
       }

@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="hover">
+  <el-card v-loading="talkLoading" shadow="hover">
     <div slot="header" class="clearfix">
       <span style="float: left">
         <strong>钉钉机器人</strong>
@@ -46,7 +46,8 @@ export default {
   },
   data() {
     return {
-      talkForm: {}
+      talkForm: {},
+      talkLoading: true
     }
   },
   async created() {
@@ -54,10 +55,12 @@ export default {
   },
   methods: {
     async getRobotInfo() {
+      this.talkLoading = true
       this.talkForm = await getRobotInfo({
         projectId: localStorage.getItem('projectId'),
         app: 'talk'
       })
+      this.talkLoading = false
     },
     async editRobotSwitch(bool) {
       if (this.talkForm.id) {

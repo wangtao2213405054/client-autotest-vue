@@ -61,6 +61,7 @@
     </el-form>
     <el-table
       v-if="refreshTable"
+      v-loading="MenuLoading"
       :data="menuList"
       style="width: 100%"
       row-key="id"
@@ -114,7 +115,8 @@ export default {
       requestForm: {
         name: null,
         identifier: null
-      }
+      },
+      MenuLoading: true
     }
   },
   created() {
@@ -138,7 +140,9 @@ export default {
     },
     // 获取权限菜单
     async getPermissionsList() {
+      this.MenuLoading = true
       this.menuList = await getPermissionsList(this.requestForm)
+      this.MenuLoading = false
     },
     // 关闭钩子
     closeDialog() {

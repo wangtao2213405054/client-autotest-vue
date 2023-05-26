@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="masterLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -243,7 +243,8 @@ export default {
         { key: true, label: '启用' },
         { key: false, label: '禁用' }
       ],
-      loggingList: loggingInfo
+      loggingList: loggingInfo,
+      masterLoading: true
     }
   },
   created() {
@@ -292,9 +293,11 @@ export default {
     },
     // 获取设备列表
     async getMasterList() {
+      this.masterLoading = true
       const { items, total } = await getMasterList(this.requestForm)
       this.masterList = items
       this.requestForm.total = total
+      this.masterLoading = false
     },
     // 关闭弹窗时的钩子
     closeDialog() {

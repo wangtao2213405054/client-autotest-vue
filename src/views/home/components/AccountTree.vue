@@ -23,7 +23,7 @@
         <el-button type="primary" @click="editClassificationData">确 定</el-button>
       </span>
     </el-dialog>
-    <el-col :span="7" :xs="24">
+    <el-col v-loading="accountTreeLoading" :span="7" :xs="24">
       <el-row :gutter="20" style="margin-bottom: 10px">
         <el-col :span="16" :xs="24">
           <el-input
@@ -105,7 +105,8 @@ export default {
         nodeId: null,
         name: null
       },
-      queryId: null
+      queryId: null,
+      accountTreeLoading: true
     }
   },
   watch: {
@@ -123,7 +124,9 @@ export default {
     },
     // 获取tree
     async getClassificationList() {
+      this.accountTreeLoading = true
       this.classificationTree = await getClassificationList()
+      this.accountTreeLoading = false
     },
     // 删除节点
     async remove(id) {

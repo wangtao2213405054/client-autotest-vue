@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="elementLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -139,7 +139,8 @@ export default {
         platform: localStorage.getItem('mold'),
         name: null,
         label: null
-      }
+      },
+      elementLoading: true
     }
   },
   created() {
@@ -169,9 +170,11 @@ export default {
       })
     },
     async getElementList() {
+      this.elementLoading = true
       const { items, total } = await getElementList(this.requestForm)
       this.elementList = items
       this.requestForm.total = total
+      this.elementLoading = false
     },
     async deleteElementInfo(id) {
       const clickConfirmResult = await this.$confirm('此操作将永久删除该元素, 是否继续?', '提示', {

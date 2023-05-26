@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="hover">
+  <el-card v-loading="larkLoading" shadow="hover">
     <div slot="header" class="clearfix">
       <span style="float: left">
         <strong>飞书机器人</strong>
@@ -27,7 +27,8 @@ export default {
   },
   data() {
     return {
-      larkForm: {}
+      larkForm: {},
+      larkLoading: true
     }
   },
   async created() {
@@ -35,10 +36,12 @@ export default {
   },
   methods: {
     async getRobotInfo() {
+      this.larkLoading = true
       this.larkForm = await getRobotInfo({
         projectId: localStorage.getItem('projectId'),
         app: 'lark'
       })
+      this.larkLoading = false
     },
     async editRobotSwitch(bool) {
       if (this.larkForm.id) {

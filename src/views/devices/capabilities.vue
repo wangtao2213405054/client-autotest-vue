@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="capabilitiesLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -335,7 +335,8 @@ export default {
         name: null
       },
       capabilitiesList: [],
-      platformList: platform
+      platformList: platform,
+      capabilitiesLoading: true
     }
   },
   created() {
@@ -402,9 +403,11 @@ export default {
     },
     // 获取设备列表
     async getCapabilitiesList() {
+      this.capabilitiesLoading = true
       const { items, total } = await getCapabilitiesList(this.requestForm)
       this.capabilitiesList = items
       this.requestForm.total = total
+      this.capabilitiesLoading = false
     },
     // 页码改变
     handleCurrentChange(newPage) {

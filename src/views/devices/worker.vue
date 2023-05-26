@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="workerLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -291,13 +291,14 @@ export default {
         { type: 'info', label: '停止', key: 3 },
         { type: 'info', label: '离线', key: 4 }
       ],
-      loggingList: loggingInfo
+      loggingList: loggingInfo,
+      workerLoading: true
     }
   },
   created() {
-    this.getWorkerList()
     this.getMasterList()
     this.getMappingList()
+    this.getWorkerList()
   },
   methods: {
     // 关闭弹窗钩子
@@ -365,9 +366,11 @@ export default {
     },
     // 获取执行设备列表
     async getWorkerList() {
+      this.workerLoading = true
       const { items, total } = await getWorkerList(this.requestForm)
       this.workerList = items
       this.requestForm.total = total
+      this.workerLoading = false
     },
     // 编辑设备
     updateDevice(value) {

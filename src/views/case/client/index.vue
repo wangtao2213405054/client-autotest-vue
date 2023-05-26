@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="caseLoading">
     <el-tabs v-model="editableTabsValue" stretch @tab-remove="removeTab">
       <el-tab-pane label="用例列表" name="first">
         <el-form ref="requestFormRef" :model="requestForm" inline>
@@ -161,7 +161,8 @@ export default {
       specialList: specials,
       actionList: actions,
       priorityList: priority,
-      caseInfo: {}
+      caseInfo: {},
+      caseLoading: true
     }
   },
   watch: {
@@ -227,9 +228,11 @@ export default {
     },
     // 获取用例列表列表
     async getCaseList() {
+      this.caseLoading = true
       const { items, total } = await getCaseList(this.requestForm)
       this.caseList = items
       this.requestForm.total = total
+      this.caseLoading = false
     },
     // 页码改变
     handleCurrentChange(newPage) {

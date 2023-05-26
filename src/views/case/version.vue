@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="versionLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -124,7 +124,8 @@ export default {
       },
       title: '添加版本',
       dialogVisible: false,
-      versionList: []
+      versionList: [],
+      versionLoading: true
     }
   },
   created() {
@@ -172,6 +173,7 @@ export default {
     },
     // 获取版本列表
     async getVersionList() {
+      this.versionLoading = true
       const { items, total } = await getVersionList(this.requestForm)
       const effectList = ['success', 'info', 'warning', 'danger', null]
       items.forEach(item => {
@@ -179,6 +181,7 @@ export default {
       })
       this.versionList = items
       this.requestForm.total = total
+      this.versionLoading = false
     },
     // 页码改变
     handleCurrentChange(newPage) {

@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="domainLoading">
     <el-dialog
       :title="title"
       :visible.sync="dialogVisible"
@@ -181,7 +181,8 @@ export default {
         { label: 'HTTP', key: 'http' }
       ],
       portList: ['443', '80'],
-      domainList: []
+      domainList: [],
+      domainLoading: true
     }
   },
   created() {
@@ -263,9 +264,11 @@ export default {
     },
     // 获取域名列表
     async getDomainList() {
+      this.domainLoading = true
       const { items, total } = await getDomainList(this.requestForm)
       this.domainList = items
       this.requestForm.total = total
+      this.domainLoading = false
     }
   }
 }
